@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sertai & Dapat Ganjaran</title>
+<style>
+  :root { --accent:#e23744; --ink:#1a1a1a; --muted:#666; --bg:#fafafa; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,'Segoe UI',Roboto,sans-serif; background:var(--bg);
+         color:var(--ink); line-height:1.5; padding:20px; }
+  .wrap { max-width:440px; margin:40px auto; }
+  .card { background:#fff; border-radius:16px; padding:28px 24px;
+          box-shadow:0 4px 24px rgba(0,0,0,.06); }
+  .badge { display:inline-block; background:#fde8ea; color:var(--accent);
+           font-size:13px; font-weight:600; padding:5px 12px; border-radius:20px; margin-bottom:16px; }
+  h1 { font-size:26px; line-height:1.25; margin-bottom:10px; }
+  .sub { color:var(--muted); font-size:15px; margin-bottom:22px; }
+  label { display:block; font-size:13px; font-weight:600; margin:14px 0 6px; }
+  input { width:100%; padding:13px 14px; border:1.5px solid #e3e3e3; border-radius:10px;
+          font-size:16px; outline:none; }
+  input:focus { border-color:var(--accent); }
+  button { width:100%; margin-top:22px; padding:15px; background:var(--accent); color:#fff;
+           border:none; border-radius:10px; font-size:16px; font-weight:700; cursor:pointer; }
+  button:disabled { opacity:.6; }
+  .tiers { margin-top:22px; padding-top:18px; border-top:1px solid #eee; }
+  .tiers h3 { font-size:14px; color:var(--muted); margin-bottom:12px; font-weight:600; }
+  .tier { display:flex; align-items:center; gap:12px; padding:9px 0; font-size:14px; }
+  .tier .n { background:var(--accent); color:#fff; width:30px; height:30px; border-radius:50%;
+             display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; }
+  .err { color:var(--accent); font-size:14px; margin-top:10px; text-align:center; }
+  .foot { text-align:center; font-size:12px; color:#aaa; margin-top:18px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <span class="badge" id="badge">Ganjaran Eksklusif</span>
+    <h1 id="headline">Ajak kawan, dapat ganjaran.</h1>
+    <p class="sub" id="subline">Daftar sekali, kongsi link awak, dan unlock ganjaran setiap kali kawan join.</p>
+
+    <div id="form">
+      <label>Nama</label>
+      <input id="name" type="text" placeholder="Nama anda" autocomplete="name">
+      <label>Nombor WhatsApp</label>
+      <input id="phone" type="tel" placeholder="0123456789" autocomplete="tel" inputmode="numeric">
+      <button id="submit" onclick="submit()">Sertai Sekarang</button>
+      <p class="err" id="err"></p>
+    </div>
+
+    <div class="tiers" id="tiers"></div>
+    <p class="foot" id="biz"></p>
+  </div>
+</div>
+
+<script>
+// ====== TUKAR INI ======
+const GAS_URL = "PASTE_WEB_APP_URL_DI_SINI";
+// =======================
+
+const ref = new URLSearchParams(location.search).get("ref") || "";
+
+// Muat config untuk papar tier & nama bisnes
+fetch(GAS_URL + "?action=config")
+  .then(r => r.json())
+  .then(d => {
+    if (!d.ok) return;
+    const c = d.config;
+    document.getElementById("badge").textContent = c.campaignName || "Ganjaran";
+    document.getElementById("biz").textContent = c.businessName || "";
+    const t = document.getElementById("tiers");
+    t.innerHTML = "<h3>Ganjaran bila ajak kawan:</h3>" +
+      c.tiers.map(x =>
+        `<div class="tier"><span class="n">${x.referrals}</span>
+         <div><strong>${x.name}</strong><br><span style="color:#888;font-size:13px">${x.desc}</span></div></div>`
+      ).join("");
+  })
+  .catch(() => {});
+
+function submit() {
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.replace(/[^0-9]/g, "");
+  const err = document.getElementById("err");
+  const btn = document.getElementById("submit");
+  err.textContent = "";
+
+  if (!phone || phone.length < 9) { err.textContent = "Sila masukkan nombor WhatsApp yang sah."; return; }
+
+  btn.disabled = true; btn.textContent = "Memproses...";
+
+  const url = GAS_URL + "?action=signup&name=" + encodeURIComponent(name) +
+              "&phone=" + encodeURIComponent(phone) +
+              (ref ? "&ref=" + encodeURIComponent(ref) : "");
+
+  fetch(url)
+    .then(r => r.json())
+    .then(d => {
+      if (d.ok && d.code) {
+        location.href = "share.html?code=" + d.code;
+      } else {
+        err.textContent = d.error || "Ralat. Cuba lagi.";
+        btn.disabled = false; btn.textContent = "Sertai Sekarang";
+      }
+    })
+    .catch(() => {
+      err.textContent = "Ralat sambungan. Cuba lagi.";
+      btn.disabled = false; btn.textContent = "Sertai Sekarang";
+    });
+}
+</script>
+</body>
+</html>
