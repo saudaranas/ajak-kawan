@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Link Referral Saya</title>
+<style>
+  :root { --accent:#e23744; --ink:#1a1a1a; --muted:#666; --bg:#fafafa; --ok:#1faa59; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,'Segoe UI',Roboto,sans-serif; background:var(--bg);
+         color:var(--ink); line-height:1.5; padding:20px; }
+  .wrap { max-width:440px; margin:30px auto; }
+  .card { background:#fff; border-radius:16px; padding:26px 22px;
+          box-shadow:0 4px 24px rgba(0,0,0,.06); }
+  h1 { font-size:22px; margin-bottom:4px; }
+  .hi { color:var(--muted); font-size:15px; margin-bottom:20px; }
+  .count { text-align:center; padding:18px; background:#fde8ea; border-radius:12px; margin-bottom:18px; }
+  .count .big { font-size:42px; font-weight:800; color:var(--accent); line-height:1; }
+  .count .lbl { font-size:13px; color:var(--muted); margin-top:4px; }
+  .bar { height:10px; background:#eee; border-radius:6px; overflow:hidden; margin:6px 0 4px; }
+  .bar > div { height:100%; background:var(--accent); transition:width .5s; }
+  .next { font-size:13px; color:var(--muted); text-align:center; margin-bottom:20px; }
+  .linkbox { display:flex; gap:8px; margin-bottom:14px; }
+  .linkbox input { flex:1; padding:12px; border:1.5px solid #e3e3e3; border-radius:10px; font-size:13px; }
+  .linkbox button { padding:12px 16px; border:none; border-radius:10px; background:#333; color:#fff;
+                    font-weight:600; cursor:pointer; font-size:13px; white-space:nowrap; }
+  .wa { display:block; text-align:center; width:100%; padding:15px; background:#25d366; color:#fff;
+        text-decoration:none; border-radius:10px; font-weight:700; font-size:16px; margin-bottom:20px; }
+  .tier { display:flex; align-items:center; gap:12px; padding:11px 12px; border-radius:10px;
+          margin-bottom:8px; border:1.5px solid #eee; }
+  .tier.done { border-color:var(--ok); background:#f0fbf4; }
+  .tier .n { width:32px; height:32px; border-radius:50%; display:flex; align-items:center;
+             justify-content:center; font-weight:700; font-size:13px; flex-shrink:0;
+             background:#eee; color:#888; }
+  .tier.done .n { background:var(--ok); color:#fff; }
+  .tier .check { margin-left:auto; color:var(--ok); font-weight:700; }
+  .sec { font-size:14px; color:var(--muted); margin:18px 0 10px; font-weight:600; }
+  .redeem { font-size:12px; color:#999; text-align:center; margin-top:16px; padding-top:14px; border-top:1px solid #eee; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card" id="card">
+    <p class="hi">Memuatkan...</p>
+  </div>
+</div>
+
+<script>
+// ====== TUKAR INI (sama dengan index.html) ======
+const GAS_URL = "PASTE_WEB_APP_URL_DI_SINI";
+// =================================================
+
+const code = new URLSearchParams(location.search).get("code") || "";
+const card = document.getElementById("card");
+
+// Link referral = halaman optin + ?ref=KOD
+const refLink = location.origin + location.pathname.replace("share.html", "index.html") + "?ref=" + code;
+
+if (!code) {
+  card.innerHTML = "<h1>Kod tak dijumpai</h1><p class='hi'>Sila daftar semula.</p>";
+} else {
+  fetch(GAS_URL + "?action=status&code=" + encodeURIComponent(code))
+    .then(r => r.json())
+    .then(render)
+    .catch(() => { card.innerHTML = "<h1>Ralat sambungan</h1>"; });
+}
+
+function render(d) {
+  if (!d.ok) { card.innerHTML = "<h1>Kod tak sah</h1><p class='hi'>"+(d.error||"")+"</p>"; return; }
+
+  const count = d.count || 0;
+  const tiers = d.tiers || [];
+  const nextTier = tiers.find(t => count < t.referrals);
+  const maxRef = tiers.length ? tiers[tiers.length-1].referrals : 1;
+  const pct = Math.min(100, Math.round(count / maxRef * 100));
+
+  let nextTxt = nextTier
+    ? `${nextTier.referrals - count} kawan lagi untuk unlock "${nextTier.name}"`
+    : "Tahniah! Semua ganjaran dibuka 🎉";
+
+  const waMsg = encodeURIComponent(
+    `Saya jumpa offer best dari ${d.businessName || "kedai ni"}! Join guna link saya: ${refLink}`
+  );
+
+  card.innerHTML = `
+    <h1>Hai ${d.name || ""}! 👋</h1>
+    <p class="hi">Kongsi link awak. Setiap kawan yang join = satu langkah lebih dekat ke ganjaran.</p>
+
+    <div class="count">
+      <div class="big">${count}</div>
+      <div class="lbl">kawan dah join</div>
+    </div>
+    <div class="bar"><div style="width:${pct}%"></div></div>
+    <p class="next">${nextTxt}</p>
+
+    <a class="wa" href="https://wa.me/?text=${waMsg}">📤 Kongsi di WhatsApp</a>
+
+    <div class="linkbox">
+      <input id="link" value="${refLink}" readonly>
+      <button onclick="copyLink()">Salin</button>
+    </div>
+
+    <p class="sec">Ganjaran anda:</p>
+    ${tiers.map(t => {
+      const done = count >= t.referrals;
+      return `<div class="tier ${done?'done':''}">
+        <span class="n">${t.referrals}</span>
+        <div><strong>${t.name}</strong><br><span style="color:#888;font-size:13px">${t.desc}</span></div>
+        ${done?'<span class="check">✓ Unlock</span>':''}
+      </div>`;
+    }).join("")}
+
+    <p class="redeem">Untuk tebus: tunjuk skrin ni kepada staff di kaunter.</p>
+  `;
+}
+
+function copyLink() {
+  const inp = document.getElementById("link");
+  inp.select();
+  navigator.clipboard.writeText(inp.value).then(() => {
+    event.target.textContent = "Disalin!";
+    setTimeout(() => event.target.textContent = "Salin", 1500);
+  });
+}
+</script>
+</body>
+</html>
