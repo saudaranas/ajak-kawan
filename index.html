@@ -35,6 +35,7 @@
 <body>
 <div class="wrap">
   <div class="card">
+    <img id="poster" style="display:none; width:100%; border-radius:12px; margin-bottom:18px;" alt="Poster">
     <span class="badge" id="badge">Ganjaran Eksklusif</span>
     <h1 id="headline">Ajak kawan, dapat ganjaran.</h1>
     <p class="sub" id="subline">Daftar sekali, kongsi link awak, dan unlock ganjaran setiap kali kawan join.</p>
@@ -60,7 +61,6 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzMIS1_8WVBMS4PnDlJJwPh
 
 const ref = new URLSearchParams(location.search).get("ref") || "";
 
-// Muat config untuk papar tier & nama bisnes
 fetch(GAS_URL + "?action=config")
   .then(r => r.json())
   .then(d => {
@@ -68,6 +68,11 @@ fetch(GAS_URL + "?action=config")
     const c = d.config;
     document.getElementById("badge").textContent = c.campaignName || "Ganjaran";
     document.getElementById("biz").textContent = c.businessName || "";
+    if (c.posterUrl) {
+      const img = document.getElementById("poster");
+      img.src = c.posterUrl;
+      img.style.display = "block";
+    }
     const t = document.getElementById("tiers");
     t.innerHTML = "<h3>Ganjaran bila ajak kawan:</h3>" +
       c.tiers.map(x =>
