@@ -45,34 +45,23 @@
 <body>
 <div class="wrap">
 
-  <!-- LOGIN / REGISTER -->
+  <!-- LOGIN -->
   <div id="auth">
     <div class="card">
       <h1>AjakKawan</h1>
       <p class="muted">Log masuk untuk urus kempen anda.</p>
-      <div class="tabs" style="margin-top:16px">
-        <button id="tabLogin" class="on" onclick="showAuth('login')">Log Masuk</button>
-        <button id="tabReg" onclick="showAuth('register')">Daftar Baru</button>
-      </div>
 
-      <div id="loginForm">
+      <div id="loginForm" style="margin-top:16px">
         <label>Email</label>
         <input id="li_email" type="email" autocomplete="email">
         <label>Password</label>
         <input id="li_pass" type="password">
         <button class="btn-primary" onclick="doLogin()">Log Masuk</button>
       </div>
-
-      <div id="regForm" class="hidden">
-        <label>Nama / Bisnes</label>
-        <input id="rg_name" type="text">
-        <label>Email</label>
-        <input id="rg_email" type="email" autocomplete="email">
-        <label>Password</label>
-        <input id="rg_pass" type="password">
-        <button class="btn-primary" onclick="doRegister()">Daftar</button>
-      </div>
       <p class="err" id="authErr"></p>
+      <p class="muted" style="text-align:center;margin-top:16px;font-size:13px">
+        Belum ada akaun? Hubungi kami untuk mendaftar.
+      </p>
     </div>
   </div>
 
@@ -144,29 +133,10 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbx1d5r79Rr8xLFdjW_BkcDO
 
 let TOKEN = "", CAMPAIGN_ID = "", CONFIG = null;
 
-// ---------- AUTH UI ----------
-function showAuth(which) {
-  document.getElementById("tabLogin").classList.toggle("on", which==="login");
-  document.getElementById("tabReg").classList.toggle("on", which==="register");
-  document.getElementById("loginForm").classList.toggle("hidden", which!=="login");
-  document.getElementById("regForm").classList.toggle("hidden", which!=="register");
-  document.getElementById("authErr").textContent = "";
-}
-
+// ---------- AUTH ----------
 function call(params) {
   const q = Object.keys(params).map(k => k+"="+encodeURIComponent(params[k])).join("&");
   return fetch(GAS_URL + "?" + q).then(r => r.json());
-}
-
-function doRegister() {
-  const name = document.getElementById("rg_name").value.trim();
-  const email = document.getElementById("rg_email").value.trim();
-  const pass = document.getElementById("rg_pass").value;
-  if (!email || !pass) { authErr("Isi email & password"); return; }
-  call({action:"register", name:name, email:email, pass:pass}).then(d => {
-    if (d.ok) { onLoggedIn(d.token, d.campaign_id, name); }
-    else authErr(d.error || "Ralat");
-  }).catch(()=>authErr("Ralat sambungan"));
 }
 
 function doLogin() {
@@ -185,8 +155,11 @@ function onLoggedIn(token, campaignId, name) {
   document.getElementById("auth").classList.add("hidden");
   document.getElementById("dash").classList.remove("hidden");
   document.getElementById("welcome").textContent = name ? ("Hai, " + name) : "";
-  document.getElementById("optinLink").value =
-    location.origin + location.pathname.replace(/app\.html$/, "").replace(/[^/]*$/, "") + "?id=" + campaignId;
+  // Link optin = root domain + ?id=campaign. Buang /login/ dari path.
+  const base = location.origin + location.pathname
+    .replace(/login\/$/, "").replace(/login\/index\.html$/, "")
+    .replace(/app\.html$/, "").replace(/index\.html$/, "");
+  document.getElementById("optinLink").value = base + "?id=" + campaignId;
   loadCampaign();
   loadStats();
 }
