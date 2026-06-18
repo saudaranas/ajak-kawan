@@ -53,8 +53,13 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbzMIS1_8WVBMS4PnDlJJwPh
 const code = new URLSearchParams(location.search).get("code") || "";
 const card = document.getElementById("card");
 
-// Link referral = halaman optin + ?ref=KOD
-const refLink = location.origin + location.pathname.replace("share.html", "index.html") + "?ref=" + code;
+// Link referral = halaman optin (root) + ?ref=KOD
+// Buang "share.html" atau "share/" supaya link tunjuk ke halaman optin root yang kemas.
+const basePath = location.pathname
+  .replace(/share\.html$/, "")   // jika guna share.html
+  .replace(/share\/$/, "")        // jika guna folder /share/
+  .replace(/index\.html$/, "");   // bersihkan index.html jika ada
+const refLink = location.origin + basePath + "?ref=" + code;
 
 if (!code) {
   card.innerHTML = "<h1>Kod tak dijumpai</h1><p class='hi'>Sila daftar semula.</p>";
