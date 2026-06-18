@@ -14,7 +14,7 @@
   html { scroll-behavior:smooth; }
   body { font-family:-apple-system,'Segoe UI',Roboto,system-ui,sans-serif; background:var(--paper);
          color:var(--ink); line-height:1.55; -webkit-font-smoothing:antialiased; }
-  .wrap { max-width:1040px; margin:0 auto; padding:0 24px; }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 40px; }
   h1,h2,h3 { line-height:1.12; letter-spacing:-0.02em; font-weight:800; }
   .eyebrow { font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
              color:var(--brand-deep); }
@@ -82,31 +82,31 @@
   }
 
   /* SECTIONS */
-  section { padding:64px 0; }
-  .sec-head { max-width:640px; margin-bottom:40px; }
+  section { padding:80px 0; }
+  .sec-head { max-width:640px; margin-bottom:48px; }
   .sec-head h2 { font-size:clamp(26px,4vw,38px); margin-top:12px; }
-  .sec-head p { color:var(--muted); margin-top:12px; font-size:17px; }
+  .sec-head p { color:var(--muted); margin-top:12px; font-size:17px; line-height:1.6; }
 
   /* STEPS */
-  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
-  .step { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:24px; }
+  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .step { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; }
   .step .num { display:inline-flex; width:38px; height:38px; border-radius:11px; background:var(--soft);
                color:var(--brand-deep); font-weight:900; align-items:center; justify-content:center;
                font-size:17px; margin-bottom:14px; }
   .step h3 { font-size:18px; margin-bottom:7px; }
-  .step p { color:var(--muted); font-size:14.5px; }
+  .step p { color:var(--muted); font-size:14.5px; line-height:1.6; }
 
   /* BENEFITS */
-  .benefits { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
-  .ben { display:flex; gap:13px; align-items:flex-start; background:var(--card); border:1px solid var(--line);
-         border-radius:14px; padding:20px; }
+  .benefits { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .ben { display:flex; gap:16px; align-items:flex-start; background:var(--card); border:1px solid var(--line);
+         border-radius:16px; padding:26px; }
   .ben .ic { flex-shrink:0; width:40px; height:40px; border-radius:10px; background:var(--soft);
              display:flex; align-items:center; justify-content:center; font-size:20px; }
-  .ben h3 { font-size:16px; margin-bottom:4px; }
-  .ben p { color:var(--muted); font-size:14px; }
+  .ben h3 { font-size:16px; margin-bottom:6px; }
+  .ben p { color:var(--muted); font-size:14px; line-height:1.6; }
 
   /* PRICING */
-  .price-sec { background:var(--ink); color:#fff; border-radius:26px; padding:50px 30px; text-align:center; }
+  .price-sec { background:var(--ink); color:#fff; border-radius:26px; padding:64px 40px; text-align:center; }
   .price-sec .eyebrow { color:#ffb4a4; }
   .price-sec h2 { font-size:clamp(28px,4vw,40px); margin:10px 0 6px; color:#fff; }
   .price-sec .psub { color:#b9b9c2; margin-bottom:30px; }
@@ -121,7 +121,7 @@
   .pold { color:var(--muted); font-size:14px; margin-bottom:18px; }
   .pold s { opacity:.7; }
   .plist { list-style:none; margin:18px 0 24px; }
-  .plist li { padding:8px 0 8px 28px; position:relative; font-size:15px; border-top:1px solid var(--line); }
+  .plist li { padding:11px 0 11px 28px; position:relative; font-size:15px; border-top:1px solid var(--line); }
   .plist li:first-child { border-top:none; }
   .plist li::before { content:"✓"; position:absolute; left:0; color:var(--node); font-weight:900; }
   .pcard .btn-primary { width:100%; text-align:center; }
@@ -129,8 +129,8 @@
 
   /* FAQ */
   .faq details { background:var(--card); border:1px solid var(--line); border-radius:13px;
-                 padding:0 20px; margin-bottom:10px; }
-  .faq summary { padding:18px 0; font-weight:700; cursor:pointer; list-style:none; font-size:16px;
+                 padding:0 24px; margin-bottom:12px; }
+  .faq summary { padding:20px 0; font-weight:700; cursor:pointer; list-style:none; font-size:16px;
                  display:flex; justify-content:space-between; align-items:center; }
   .faq summary::-webkit-details-marker { display:none; }
   .faq summary::after { content:"+"; color:var(--brand); font-weight:800; font-size:22px; }
@@ -170,15 +170,19 @@
   .hidden { display:none; }
 
   @media (max-width:720px){
-    .wrap { padding:0 18px; }
-    section { padding:48px 0; }
-    .steps { grid-template-columns:1fr; }
-    .benefits { grid-template-columns:1fr; }
-    .price-sec { padding:40px 20px; border-radius:20px; }
-    .pcard { padding:30px 22px; }
+    .wrap { padding:0 24px; }
+    section { padding:56px 0; }
+    .sec-head { margin-bottom:36px; }
+    .steps { grid-template-columns:1fr; gap:18px; }
+    .benefits { grid-template-columns:1fr; gap:18px; }
+    .ben { padding:22px; }
+    .step { padding:24px; }
+    .price-sec { padding:44px 22px; border-radius:22px; }
+    .pcard { padding:32px 24px; }
     .hero { padding:36px 0 28px; }
     .netwrap { padding:20px; }
     .badge-float { font-size:11px; padding:7px 10px; }
+    .loopbox { padding:24px 20px 20px; }
   }
 </style>
 </head>
@@ -226,7 +230,7 @@
 </header>
 
 <!-- VIRAL LOOP EXPLAINER -->
-<section class="wrap" style="padding-top:20px">
+<section class="wrap" style="padding-top:32px;padding-bottom:32px">
   <div class="loopbox">
     <svg class="net" viewBox="0 0 800 200" role="img" aria-label="Satu lead membawa ramai lead">
       <line class="lnk" x1="110" y1="100" x2="320" y2="45"  style="animation:drawLine .5s ease .3s forwards"/>
