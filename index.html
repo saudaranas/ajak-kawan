@@ -30,88 +30,92 @@
              display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; }
   .err { color:var(--accent); font-size:14px; margin-top:10px; text-align:center; }
   .foot { text-align:center; font-size:12px; color:#aaa; margin-top:18px; }
+  .loading { text-align:center; color:var(--muted); padding:40px; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="card">
-    <img id="poster" style="display:none; width:100%; border-radius:12px; margin-bottom:18px;" alt="Poster">
-    <span class="badge" id="badge">Ganjaran Eksklusif</span>
-    <h1 id="headline">Ajak kawan, dapat ganjaran.</h1>
-    <p class="sub" id="subline">Daftar sekali, kongsi link awak, dan unlock ganjaran setiap kali kawan join.</p>
-
-    <div id="form">
-      <label>Nama</label>
-      <input id="name" type="text" placeholder="Nama anda" autocomplete="name">
-      <label>Nombor WhatsApp</label>
-      <input id="phone" type="tel" placeholder="0123456789" autocomplete="tel" inputmode="numeric">
-      <button id="submit" onclick="submit()">Sertai Sekarang</button>
-      <p class="err" id="err"></p>
-    </div>
-
-    <div class="tiers" id="tiers"></div>
-    <p class="foot" id="biz"></p>
+  <div class="card" id="card">
+    <p class="loading">Memuatkan...</p>
   </div>
 </div>
 
 <script>
 // ====== TUKAR INI ======
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzMIS1_8WVBMS4PnDlJJwPh15TKs6vBNPC3Unu1PRr7X3l9UFh3JP-9Vd5NkthGES-7eA/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx1d5r79Rr8xLFdjW_BkcDOd27ZHO1f_emxeCCwioPc0UqD1MQ5O8fI6-F5V5D9VW9l/exec";
 // =======================
 
-const ref = new URLSearchParams(location.search).get("ref") || "";
+const params = new URLSearchParams(location.search);
+const campaignId = params.get("id") || "";
+const ref = params.get("ref") || "";
+const card = document.getElementById("card");
 
-fetch(GAS_URL + "?action=config")
-  .then(r => r.json())
-  .then(d => {
-    if (!d.ok) return;
-    const c = d.config;
-    document.getElementById("badge").textContent = c.campaignName || "Ganjaran";
-    document.getElementById("biz").textContent = c.businessName || "";
-    if (c.posterUrl) {
-      const img = document.getElementById("poster");
-      img.src = c.posterUrl;
-      img.style.display = "block";
-    }
-    const t = document.getElementById("tiers");
-    t.innerHTML = "<h3>Ganjaran bila ajak kawan:</h3>" +
-      c.tiers.map(x =>
-        `<div class="tier"><span class="n">${x.referrals}</span>
-         <div><strong>${x.name}</strong><br><span style="color:#888;font-size:13px">${x.desc}</span></div></div>`
-      ).join("");
-  })
-  .catch(() => {});
+if (!campaignId) {
+  card.innerHTML = "<h1>Kempen tak dijumpai</h1><p class='sub'>Link tidak sah.</p>";
+} else {
+  // Track klik (tak tunggu hasil)
+  fetch(GAS_URL + "?action=trackclick&campaign_id=" + encodeURIComponent(campaignId) +
+        "&ref=" + encodeURIComponent(ref)).catch(()=>{});
+  // Muat config
+  fetch(GAS_URL + "?action=config&campaign_id=" + encodeURIComponent(campaignId))
+    .then(r => r.json())
+    .then(d => {
+      if (!d.ok) { card.innerHTML = "<h1>Kempen tak dijumpai</h1>"; return; }
+      renderForm(d.config);
+    })
+    .catch(() => { card.innerHTML = "<h1>Ralat sambungan</h1>"; });
+}
 
-function submit() {
+function renderForm(c) {
+  const tiersHtml = (c.tiers||[]).map(x =>
+    `<div class="tier"><span class="n">${x.referrals}</span>
+     <div><strong>${esc(x.name)}</strong><br><span style="color:#888;font-size:13px">${esc(x.desc)}</span></div></div>`
+  ).join("");
+
+  card.innerHTML = `
+    ${c.posterUrl ? `<img src="${esc(c.posterUrl)}" style="width:100%;border-radius:12px;margin-bottom:18px" alt="Poster">` : ""}
+    <span class="badge">${esc(c.campaignName||"Ganjaran")}</span>
+    <h1>${esc(c.headline||"Ajak kawan, dapat ganjaran.")}</h1>
+    <p class="sub">${esc(c.subline||"Daftar, kongsi link, unlock ganjaran.")}</p>
+    <div>
+      <label>Nama</label>
+      <input id="name" type="text" placeholder="Nama anda" autocomplete="name">
+      <label>Nombor WhatsApp</label>
+      <input id="phone" type="tel" placeholder="0123456789" autocomplete="tel" inputmode="numeric">
+      <button id="submit" onclick="submitForm()">Sertai Sekarang</button>
+      <p class="err" id="err"></p>
+    </div>
+    <div class="tiers"><h3>Ganjaran bila ajak kawan:</h3>${tiersHtml}</div>
+    <p class="foot">${esc(c.businessName||"")}</p>
+  `;
+}
+
+function submitForm() {
   const name = document.getElementById("name").value.trim();
   const phone = document.getElementById("phone").value.replace(/[^0-9]/g, "");
   const err = document.getElementById("err");
   const btn = document.getElementById("submit");
   err.textContent = "";
-
   if (!phone || phone.length < 9) { err.textContent = "Sila masukkan nombor WhatsApp yang sah."; return; }
 
   btn.disabled = true; btn.textContent = "Memproses...";
-
-  const url = GAS_URL + "?action=signup&name=" + encodeURIComponent(name) +
-              "&phone=" + encodeURIComponent(phone) +
+  const url = GAS_URL + "?action=signup&campaign_id=" + encodeURIComponent(campaignId) +
+              "&name=" + encodeURIComponent(name) + "&phone=" + encodeURIComponent(phone) +
               (ref ? "&ref=" + encodeURIComponent(ref) : "");
-
-  fetch(url)
-    .then(r => r.json())
-    .then(d => {
-      if (d.ok && d.code) {
-        location.href = "share.html?code=" + d.code;
-      } else {
-        err.textContent = d.error || "Ralat. Cuba lagi.";
-        btn.disabled = false; btn.textContent = "Sertai Sekarang";
-      }
-    })
-    .catch(() => {
-      err.textContent = "Ralat sambungan. Cuba lagi.";
+  fetch(url).then(r => r.json()).then(d => {
+    if (d.ok && d.code) {
+      location.href = "share/?id=" + encodeURIComponent(campaignId) + "&code=" + d.code;
+    } else {
+      err.textContent = d.error || "Ralat. Cuba lagi.";
       btn.disabled = false; btn.textContent = "Sertai Sekarang";
-    });
+    }
+  }).catch(() => {
+    err.textContent = "Ralat sambungan. Cuba lagi.";
+    btn.disabled = false; btn.textContent = "Sertai Sekarang";
+  });
 }
+
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 </script>
 </body>
 </html>
