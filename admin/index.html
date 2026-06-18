@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AjakKawan — Super Admin</title>
+<style>
+  :root { --accent:#5b21b6; --ink:#1a1a1a; --muted:#666; --bg:#f4f5f7; --ok:#1faa59; --line:#e3e3e3; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--ink); line-height:1.5; }
+  .wrap { max-width:760px; margin:0 auto; padding:18px; }
+  .card { background:#fff; border-radius:14px; padding:22px; box-shadow:0 2px 12px rgba(0,0,0,.05); margin-bottom:16px; }
+  h1 { font-size:22px; margin-bottom:4px; }
+  h2 { font-size:16px; margin-bottom:14px; }
+  .muted { color:var(--muted); font-size:14px; }
+  label { display:block; font-size:13px; font-weight:600; margin:12px 0 5px; }
+  input, select { width:100%; padding:11px 12px; border:1.5px solid var(--line); border-radius:9px; font-size:15px; outline:none; }
+  input:focus { border-color:var(--accent); }
+  button { padding:12px 18px; border:none; border-radius:9px; font-size:15px; font-weight:700; cursor:pointer; }
+  .btn-primary { background:var(--accent); color:#fff; width:100%; margin-top:16px; }
+  .btn-sm { padding:6px 11px; font-size:12px; }
+  .btn-sec { background:#eee; color:#333; }
+  .btn-warn { background:#fde8ea; color:var(--accent); }
+  .err { color:#e23744; font-size:14px; margin-top:10px; text-align:center; }
+  .ok { color:var(--ok); font-size:14px; margin-top:10px; text-align:center; }
+  table { width:100%; border-collapse:collapse; font-size:13px; margin-top:10px; }
+  th, td { text-align:left; padding:9px 7px; border-bottom:1px solid #f0f0f0; vertical-align:top; }
+  th { color:var(--muted); font-weight:600; }
+  .pill { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; }
+  .pill.ok { background:#f0fbf4; color:var(--ok); }
+  .pill.exp { background:#fde8ea; color:#e23744; }
+  .linkmini { font-size:11px; color:var(--accent); word-break:break-all; }
+  .hidden { display:none; }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- LOGIN ADMIN -->
+  <div id="adminAuth">
+    <div class="card">
+      <h1>Super Admin</h1>
+      <p class="muted">Panel pengurusan AjakKawan.</p>
+      <label>Password Admin</label>
+      <input id="adminPass" type="password">
+      <button class="btn-primary" onclick="adminLogin()">Masuk</button>
+      <p class="err" id="loginErr"></p>
+    </div>
+  </div>
+
+  <!-- PANEL -->
+  <div id="panel" class="hidden">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><h1>Super Admin</h1><p class="muted" id="count"></p></div>
+        <button class="btn-sec btn-sm" onclick="adminLogout()">Keluar</button>
+      </div>
+    </div>
+
+    <!-- CREATE CLIENT -->
+    <div class="card">
+      <h2>Daftar Client Baru</h2>
+      <label>Nama / Bisnes</label>
+      <input id="nc_name" type="text">
+      <div class="row2">
+        <div><label>Email</label><input id="nc_email" type="email"></div>
+        <div><label>Password</label><input id="nc_pass" type="text"></div>
+      </div>
+      <label>Pakej</label>
+      <select id="nc_plan">
+        <option value="1bulan">1 Bulan</option>
+        <option value="3bulan">3 Bulan</option>
+      </select>
+      <button class="btn-primary" onclick="createClient()">Daftar Client</button>
+      <p class="ok" id="createMsg"></p>
+    </div>
+
+    <!-- CLIENT LIST -->
+    <div class="card">
+      <h2>Senarai Client</h2>
+      <div id="clientList"><p class="muted">Memuatkan...</p></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ====== TUKAR INI ======
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx1d5r79Rr8xLFdjW_BkcDOd27ZHO1f_emxeCCwioPc0UqD1MQ5O8fI6-F5V5D9VW9l/exec";
+// =======================
+const OPTIN_BASE = location.origin + location.pathname.replace(/admin\/$/, "").replace(/admin\/index\.html$/, "").replace(/index\.html$/, "");
+
+let APASS = "";
+
+function call(params) {
+  const q = Object.keys(params).map(k => k+"="+encodeURIComponent(params[k])).join("&");
+  return fetch(GAS_URL + "?" + q).then(r => r.json());
+}
+
+function adminLogin() {
+  const pass = document.getElementById("adminPass").value;
+  call({action:"admin_list", admin_pass:pass}).then(d => {
+    if (d.ok) {
+      APASS = pass;
+      document.getElementById("adminAuth").classList.add("hidden");
+      document.getElementById("panel").classList.remove("hidden");
+      renderClients(d.clients);
+    } else {
+      document.getElementById("loginErr").textContent = d.error || "Password salah";
+    }
+  }).catch(()=>document.getElementById("loginErr").textContent="Ralat sambungan");
+}
+
+function adminLogout() {
+  APASS = "";
+  document.getElementById("panel").classList.add("hidden");
+  document.getElementById("adminAuth").classList.remove("hidden");
+}
+
+function refresh() {
+  call({action:"admin_list", admin_pass:APASS}).then(d => { if (d.ok) renderClients(d.clients); });
+}
+
+function renderClients(clients) {
+  document.getElementById("count").textContent = clients.length + " client";
+  const el = document.getElementById("clientList");
+  if (!clients.length) { el.innerHTML = "<p class='muted'>Tiada client lagi.</p>"; return; }
+
+  const now = new Date();
+  el.innerHTML = "<table><tr><th>Client</th><th>Pakej</th><th>Link Optin</th><th></th></tr>" +
+    clients.map(c => {
+      const exp = c.expiry ? new Date(c.expiry) : null;
+      const active = exp && exp > now;
+      const expTxt = exp ? exp.toLocaleDateString('ms-MY') : "-";
+      const optin = OPTIN_BASE + "?id=" + c.campaign_id;
+      return `<tr>
+        <td><strong>${esc(c.name||'-')}</strong><br><span class="muted">${esc(c.email)}</span></td>
+        <td>${esc(c.plan||'-')}<br>
+          <span class="pill ${active?'ok':'exp'}">${active?'Aktif':'Tamat'}</span><br>
+          <span class="muted" style="font-size:11px">${expTxt}</span></td>
+        <td><a class="linkmini" href="${esc(optin)}" target="_blank">${esc(optin)}</a></td>
+        <td>
+          <button class="btn-sm btn-sec" onclick="renew('${c.client_id}','1bulan')">+1bln</button>
+          <button class="btn-sm btn-sec" onclick="renew('${c.client_id}','3bulan')">+3bln</button>
+          <button class="btn-sm btn-warn" onclick="delClient('${c.client_id}','${esc(c.email)}')">Padam</button>
+        </td>
+      </tr>`;
+    }).join("") + "</table>";
+}
+
+function createClient() {
+  const name = document.getElementById("nc_name").value.trim();
+  const email = document.getElementById("nc_email").value.trim();
+  const pass = document.getElementById("nc_pass").value.trim();
+  const plan = document.getElementById("nc_plan").value;
+  const msg = document.getElementById("createMsg");
+  msg.textContent = ""; msg.className = "ok";
+  if (!email || !pass) { msg.className="err"; msg.textContent="Isi email & password"; return; }
+
+  call({action:"admin_create", admin_pass:APASS, name:name, email:email, pass:pass, plan:plan}).then(d => {
+    if (d.ok) {
+      msg.textContent = "Client didaftar! Link optin sedia.";
+      document.getElementById("nc_name").value="";
+      document.getElementById("nc_email").value="";
+      document.getElementById("nc_pass").value="";
+      refresh();
+    } else { msg.className="err"; msg.textContent = d.error || "Ralat"; }
+  }).catch(()=>{ msg.className="err"; msg.textContent="Ralat sambungan"; });
+}
+
+function renew(clientId, plan) {
+  call({action:"admin_update", admin_pass:APASS, client_id:clientId, plan:plan}).then(d => {
+    if (d.ok) refresh();
+  });
+}
+
+function delClient(clientId, email) {
+  if (!confirm("Padam client " + email + "? Data lead kekal, tapi login dipadam.")) return;
+  call({action:"admin_delete", admin_pass:APASS, client_id:clientId}).then(d => {
+    if (d.ok) refresh();
+  });
+}
+
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+</script>
+</body>
+</html>
