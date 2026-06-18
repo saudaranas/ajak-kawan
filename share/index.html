@@ -10,8 +10,7 @@
   body { font-family:-apple-system,'Segoe UI',Roboto,sans-serif; background:var(--bg);
          color:var(--ink); line-height:1.5; padding:20px; }
   .wrap { max-width:440px; margin:30px auto; }
-  .card { background:#fff; border-radius:16px; padding:26px 22px;
-          box-shadow:0 4px 24px rgba(0,0,0,.06); }
+  .card { background:#fff; border-radius:16px; padding:26px 22px; box-shadow:0 4px 24px rgba(0,0,0,.06); }
   h1 { font-size:22px; margin-bottom:4px; }
   .hi { color:var(--muted); font-size:15px; margin-bottom:20px; }
   .count { text-align:center; padding:18px; background:#fde8ea; border-radius:12px; margin-bottom:18px; }
@@ -30,8 +29,7 @@
           margin-bottom:8px; border:1.5px solid #eee; }
   .tier.done { border-color:var(--ok); background:#f0fbf4; }
   .tier .n { width:32px; height:32px; border-radius:50%; display:flex; align-items:center;
-             justify-content:center; font-weight:700; font-size:13px; flex-shrink:0;
-             background:#eee; color:#888; }
+             justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; background:#eee; color:#888; }
   .tier.done .n { background:var(--ok); color:#fff; }
   .tier .check { margin-left:auto; color:var(--ok); font-weight:700; }
   .sec { font-size:14px; color:var(--muted); margin:18px 0 10px; font-weight:600; }
@@ -39,102 +37,80 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="card" id="card">
-    <p class="hi">Memuatkan...</p>
-  </div>
+  <div class="card" id="card"><p class="hi">Memuatkan...</p></div>
 </div>
 
 <script>
-// ====== TUKAR INI (sama dengan index.html) ======
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzMIS1_8WVBMS4PnDlJJwPh15TKs6vBNPC3Unu1PRr7X3l9UFh3JP-9Vd5NkthGES-7eA/exec";
-// =================================================
+// ====== TUKAR INI ======
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx1d5r79Rr8xLFdjW_BkcDOd27ZHO1f_emxeCCwioPc0UqD1MQ5O8fI6-F5V5D9VW9l/exec";
+// =======================
 
-const code = new URLSearchParams(location.search).get("code") || "";
+const params = new URLSearchParams(location.search);
+const campaignId = params.get("id") || "";
+const code = params.get("code") || "";
 const card = document.getElementById("card");
 
-// Link referral = halaman optin (root) + ?ref=KOD
-const basePath = location.pathname
-  .replace(/share\.html$/, "")
-  .replace(/share\/$/, "")
-  .replace(/index\.html$/, "");
-const refLink = location.origin + basePath + "?ref=" + code;
+// Link referral = halaman optin root + ?id=KEMPEN&ref=KOD
+const basePath = location.pathname.replace(/share\/$/, "").replace(/share\/index\.html$/, "").replace(/index\.html$/, "");
+const refLink = location.origin + basePath + "?id=" + encodeURIComponent(campaignId) + "&ref=" + code;
 
-if (!code) {
+if (!campaignId || !code) {
   card.innerHTML = "<h1>Kod tak dijumpai</h1><p class='hi'>Sila daftar semula.</p>";
 } else {
-  fetch(GAS_URL + "?action=status&code=" + encodeURIComponent(code))
-    .then(r => r.json())
-    .then(render)
+  fetch(GAS_URL + "?action=status&campaign_id=" + encodeURIComponent(campaignId) + "&code=" + encodeURIComponent(code))
+    .then(r => r.json()).then(render)
     .catch(() => { card.innerHTML = "<h1>Ralat sambungan</h1>"; });
 }
 
 function render(d) {
-  if (!d.ok) { card.innerHTML = "<h1>Kod tak sah</h1><p class='hi'>"+(d.error||"")+"</p>"; return; }
-
+  if (!d.ok) { card.innerHTML = "<h1>Kod tak sah</h1><p class='hi'>"+esc(d.error||"")+"</p>"; return; }
   const count = d.count || 0;
   const tiers = d.tiers || [];
   const nextTier = tiers.find(t => count < t.referrals);
   const maxRef = tiers.length ? tiers[tiers.length-1].referrals : 1;
   const pct = Math.min(100, Math.round(count / maxRef * 100));
-
-  let nextTxt = nextTier
-    ? `${nextTier.referrals - count} kawan lagi untuk unlock "${nextTier.name}"`
+  const nextTxt = nextTier
+    ? `${nextTier.referrals - count} kawan lagi untuk unlock "${esc(nextTier.name)}"`
     : "Tahniah! Semua ganjaran dibuka 🎉";
-
   const waMsg = encodeURIComponent(
-    `Saya jumpa offer best dari ${d.businessName || "kedai ni"}! Join guna link saya: ${refLink}`
-  );
+    `Saya jumpa offer best dari ${d.businessName || "kempen ni"}! Join guna link saya: ${refLink}`);
 
   card.innerHTML = `
-    <h1>Hai ${d.name || ""}! 👋</h1>
+    <h1>Hai ${esc(d.name||"")}! 👋</h1>
     <p class="hi">Kongsi link awak. Setiap kawan yang join = satu langkah lebih dekat ke ganjaran.</p>
-
-    <div class="count">
-      <div class="big">${count}</div>
-      <div class="lbl">kawan dah join</div>
-    </div>
+    <div class="count"><div class="big">${count}</div><div class="lbl">kawan dah join</div></div>
     <div class="bar"><div style="width:${pct}%"></div></div>
     <p class="next">${nextTxt}</p>
-
     <a class="wa" href="https://wa.me/?text=${waMsg}">📤 Kongsi di WhatsApp</a>
-
     <div class="linkbox">
-      <input id="link" value="${refLink}" readonly>
+      <input id="link" value="${esc(refLink)}" readonly>
       <button onclick="copyLink()">Salin</button>
     </div>
-
     <p class="sec">Ganjaran anda:</p>
     ${tiers.map(t => {
       const done = count >= t.referrals;
-      let rewardAction = "";
+      let action = "";
       if (done) {
-        if (t.rewardType === "link" && t.rewardUrl) {
-          rewardAction = `<a href="${t.rewardUrl}" target="_blank" style="display:inline-block;margin-top:8px;padding:9px 16px;background:var(--ok);color:#fff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">🎁 Akses Reward</a>`;
-        } else if (t.instruction) {
-          rewardAction = `<div style="margin-top:8px;font-size:13px;color:#1faa59;">📍 ${t.instruction}</div>`;
-        }
+        if (t.rewardType === "link" && t.rewardUrl)
+          action = `<a href="${esc(t.rewardUrl)}" target="_blank" style="display:inline-block;margin-top:8px;padding:9px 16px;background:var(--ok);color:#fff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">🎁 Akses Reward</a>`;
+        else if (t.instruction)
+          action = `<div style="margin-top:8px;font-size:13px;color:#1faa59;">📍 ${esc(t.instruction)}</div>`;
       }
-      return `<div class="tier ${done?'done':''}">
-        <span class="n">${t.referrals}</span>
-        <div style="flex:1">
-          <strong>${t.name}</strong><br>
-          <span style="color:#888;font-size:13px">${t.desc}</span>
-          ${rewardAction}
-        </div>
-        ${done?'<span class="check">✓</span>':''}
-      </div>`;
+      return `<div class="tier ${done?'done':''}"><span class="n">${t.referrals}</span>
+        <div style="flex:1"><strong>${esc(t.name)}</strong><br>
+        <span style="color:#888;font-size:13px">${esc(t.desc)}</span>${action}</div>
+        ${done?'<span class="check">✓</span>':''}</div>`;
     }).join("")}
   `;
 }
 
 function copyLink() {
   const inp = document.getElementById("link");
-  inp.select();
-  navigator.clipboard.writeText(inp.value).then(() => {
-    event.target.textContent = "Disalin!";
-    setTimeout(() => event.target.textContent = "Salin", 1500);
-  });
+  inp.select(); navigator.clipboard.writeText(inp.value);
+  event.target.textContent = "Disalin!"; setTimeout(()=>event.target.textContent="Salin",1500);
 }
+
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 </script>
 </body>
 </html>
