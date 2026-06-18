@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AjakKawan — Dashboard</title>
+<style>
+  :root { --accent:#e23744; --ink:#1a1a1a; --muted:#666; --bg:#f4f5f7; --ok:#1faa59; --line:#e3e3e3; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--ink); line-height:1.5; }
+  .wrap { max-width:620px; margin:0 auto; padding:18px; }
+  .card { background:#fff; border-radius:14px; padding:22px; box-shadow:0 2px 12px rgba(0,0,0,.05); margin-bottom:16px; }
+  h1 { font-size:22px; margin-bottom:4px; }
+  h2 { font-size:16px; margin-bottom:14px; }
+  .muted { color:var(--muted); font-size:14px; }
+  label { display:block; font-size:13px; font-weight:600; margin:12px 0 5px; }
+  input, textarea, select { width:100%; padding:11px 12px; border:1.5px solid var(--line); border-radius:9px; font-size:15px; outline:none; font-family:inherit; }
+  input:focus, textarea:focus { border-color:var(--accent); }
+  button { padding:12px 18px; border:none; border-radius:9px; font-size:15px; font-weight:700; cursor:pointer; }
+  .btn-primary { background:var(--accent); color:#fff; width:100%; margin-top:16px; }
+  .btn-sec { background:#eee; color:#333; }
+  .btn-sm { padding:7px 12px; font-size:13px; }
+  .err { color:var(--accent); font-size:14px; margin-top:10px; text-align:center; }
+  .ok { color:var(--ok); font-size:14px; margin-top:10px; text-align:center; }
+  .tabs { display:flex; gap:8px; margin-bottom:16px; }
+  .tabs button { flex:1; background:#fff; border:1.5px solid var(--line); border-radius:9px; padding:10px; font-weight:600; color:var(--muted); }
+  .tabs button.on { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+  .stat { background:#fafafa; border-radius:10px; padding:14px; text-align:center; }
+  .stat .v { font-size:26px; font-weight:800; color:var(--accent); }
+  .stat .l { font-size:12px; color:var(--muted); }
+  .ratio { display:flex; gap:10px; margin-bottom:8px; }
+  .ratio div { flex:1; background:#f0fbf4; border-radius:8px; padding:10px; text-align:center; font-size:13px; }
+  .ratio b { color:var(--ok); }
+  .tier-box { border:1.5px solid var(--line); border-radius:10px; padding:14px; margin-bottom:10px; position:relative; }
+  .tier-box .del { position:absolute; top:10px; right:10px; background:none; color:var(--accent); font-size:13px; padding:2px; }
+  .linkrow { display:flex; gap:8px; margin-top:6px; }
+  .linkrow input { font-size:13px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; margin-top:8px; }
+  th, td { text-align:left; padding:8px 6px; border-bottom:1px solid #f0f0f0; }
+  th { color:var(--muted); font-weight:600; }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- LOGIN / REGISTER -->
+  <div id="auth">
+    <div class="card">
+      <h1>AjakKawan</h1>
+      <p class="muted">Log masuk untuk urus kempen anda.</p>
+      <div class="tabs" style="margin-top:16px">
+        <button id="tabLogin" class="on" onclick="showAuth('login')">Log Masuk</button>
+        <button id="tabReg" onclick="showAuth('register')">Daftar Baru</button>
+      </div>
+
+      <div id="loginForm">
+        <label>Email</label>
+        <input id="li_email" type="email" autocomplete="email">
+        <label>Password</label>
+        <input id="li_pass" type="password">
+        <button class="btn-primary" onclick="doLogin()">Log Masuk</button>
+      </div>
+
+      <div id="regForm" class="hidden">
+        <label>Nama / Bisnes</label>
+        <input id="rg_name" type="text">
+        <label>Email</label>
+        <input id="rg_email" type="email" autocomplete="email">
+        <label>Password</label>
+        <input id="rg_pass" type="password">
+        <button class="btn-primary" onclick="doRegister()">Daftar</button>
+      </div>
+      <p class="err" id="authErr"></p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dash" class="hidden">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><h1>Dashboard</h1><p class="muted" id="welcome"></p></div>
+        <button class="btn-sec btn-sm" onclick="logout()">Log Keluar</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button id="navStats" class="on" onclick="showDash('stats')">Statistik</button>
+      <button id="navEdit" onclick="showDash('edit')">Edit Kempen</button>
+    </div>
+
+    <!-- STATS -->
+    <div id="statsView" class="card">
+      <h2>Prestasi Kempen</h2>
+      <div class="stats">
+        <div class="stat"><div class="v" id="s_clicks">0</div><div class="l">Klik</div></div>
+        <div class="stat"><div class="v" id="s_leads">0</div><div class="l">Lead</div></div>
+        <div class="stat"><div class="v" id="s_refs">0</div><div class="l">Referral</div></div>
+      </div>
+      <div class="ratio">
+        <div>Klik → Lead<br><b id="r_cl">0%</b></div>
+        <div>Lead → Referral<br><b id="r_lr">0%</b></div>
+      </div>
+      <h2 style="margin-top:18px">Senarai Lead</h2>
+      <div id="leadTable"><p class="muted">Tiada lead lagi.</p></div>
+    </div>
+
+    <!-- EDIT -->
+    <div id="editView" class="card hidden">
+      <h2>Edit Kempen</h2>
+      <label>Link Optin Anda (kongsi ini)</label>
+      <div class="linkrow">
+        <input id="optinLink" readonly>
+        <button class="btn-sec btn-sm" onclick="copyOptin()">Salin</button>
+      </div>
+
+      <label>Nama Kempen</label>
+      <input id="c_campaignName" type="text">
+      <label>Nama Bisnes</label>
+      <input id="c_businessName" type="text">
+      <label>URL Poster (pilihan)</label>
+      <input id="c_posterUrl" type="text" placeholder="https://...">
+      <label>Headline</label>
+      <input id="c_headline" type="text">
+      <label>Subheadline</label>
+      <input id="c_subline" type="text">
+
+      <h2 style="margin-top:20px">Reward Tiers</h2>
+      <div id="tiersWrap"></div>
+      <button class="btn-sec btn-sm" onclick="addTier()" style="margin-top:6px">+ Tambah Tier</button>
+
+      <button class="btn-primary" onclick="saveCampaign()">Simpan Kempen</button>
+      <p class="ok" id="saveMsg"></p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ====== TUKAR INI ======
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx1d5r79Rr8xLFdjW_BkcDOd27ZHO1f_emxeCCwioPc0UqD1MQ5O8fI6-F5V5D9VW9l/exec";
+// =======================
+
+let TOKEN = "", CAMPAIGN_ID = "", CONFIG = null;
+
+// ---------- AUTH UI ----------
+function showAuth(which) {
+  document.getElementById("tabLogin").classList.toggle("on", which==="login");
+  document.getElementById("tabReg").classList.toggle("on", which==="register");
+  document.getElementById("loginForm").classList.toggle("hidden", which!=="login");
+  document.getElementById("regForm").classList.toggle("hidden", which!=="register");
+  document.getElementById("authErr").textContent = "";
+}
+
+function call(params) {
+  const q = Object.keys(params).map(k => k+"="+encodeURIComponent(params[k])).join("&");
+  return fetch(GAS_URL + "?" + q).then(r => r.json());
+}
+
+function doRegister() {
+  const name = document.getElementById("rg_name").value.trim();
+  const email = document.getElementById("rg_email").value.trim();
+  const pass = document.getElementById("rg_pass").value;
+  if (!email || !pass) { authErr("Isi email & password"); return; }
+  call({action:"register", name:name, email:email, pass:pass}).then(d => {
+    if (d.ok) { onLoggedIn(d.token, d.campaign_id, name); }
+    else authErr(d.error || "Ralat");
+  }).catch(()=>authErr("Ralat sambungan"));
+}
+
+function doLogin() {
+  const email = document.getElementById("li_email").value.trim();
+  const pass = document.getElementById("li_pass").value;
+  call({action:"login", email:email, pass:pass}).then(d => {
+    if (d.ok) { onLoggedIn(d.token, d.campaign_id, d.name); }
+    else authErr(d.error || "Ralat");
+  }).catch(()=>authErr("Ralat sambungan"));
+}
+
+function authErr(m) { document.getElementById("authErr").textContent = m; }
+
+function onLoggedIn(token, campaignId, name) {
+  TOKEN = token; CAMPAIGN_ID = campaignId;
+  document.getElementById("auth").classList.add("hidden");
+  document.getElementById("dash").classList.remove("hidden");
+  document.getElementById("welcome").textContent = name ? ("Hai, " + name) : "";
+  document.getElementById("optinLink").value =
+    location.origin + location.pathname.replace(/app\.html$/, "").replace(/[^/]*$/, "") + "?id=" + campaignId;
+  loadCampaign();
+  loadStats();
+}
+
+function logout() {
+  TOKEN=""; CAMPAIGN_ID=""; CONFIG=null;
+  document.getElementById("dash").classList.add("hidden");
+  document.getElementById("auth").classList.remove("hidden");
+}
+
+// ---------- DASH NAV ----------
+function showDash(which) {
+  document.getElementById("navStats").classList.toggle("on", which==="stats");
+  document.getElementById("navEdit").classList.toggle("on", which==="edit");
+  document.getElementById("statsView").classList.toggle("hidden", which!=="stats");
+  document.getElementById("editView").classList.toggle("hidden", which!=="edit");
+  if (which==="stats") loadStats();
+}
+
+// ---------- CAMPAIGN ----------
+function loadCampaign() {
+  call({action:"getcampaign", campaign_id:CAMPAIGN_ID}).then(d => {
+    if (!d.ok) return;
+    CONFIG = d.config;
+    document.getElementById("c_campaignName").value = CONFIG.campaignName || "";
+    document.getElementById("c_businessName").value = CONFIG.businessName || "";
+    document.getElementById("c_posterUrl").value = CONFIG.posterUrl || "";
+    document.getElementById("c_headline").value = CONFIG.headline || "";
+    document.getElementById("c_subline").value = CONFIG.subline || "";
+    renderTiers();
+  });
+}
+
+function renderTiers() {
+  const wrap = document.getElementById("tiersWrap");
+  wrap.innerHTML = (CONFIG.tiers||[]).map((t,i) => `
+    <div class="tier-box">
+      <button class="del" onclick="delTier(${i})">Buang</button>
+      <label>Referral diperlukan</label>
+      <input type="number" id="t_ref_${i}" value="${t.referrals||3}">
+      <label>Nama Reward</label>
+      <input type="text" id="t_name_${i}" value="${esc(t.name||'')}">
+      <label>Keterangan</label>
+      <input type="text" id="t_desc_${i}" value="${esc(t.desc||'')}">
+      <label>Jenis Reward</label>
+      <select id="t_type_${i}" onchange="toggleTierType(${i})">
+        <option value="offline" ${t.rewardType==='offline'?'selected':''}>Tebus Offline (di kaunter)</option>
+        <option value="link" ${t.rewardType==='link'?'selected':''}>Link (download/akses)</option>
+      </select>
+      <div id="t_offline_${i}" class="${t.rewardType==='link'?'hidden':''}">
+        <label>Arahan Tebus</label>
+        <input type="text" id="t_instr_${i}" value="${esc(t.instruction||'Tunjuk skrin ini kepada staff di kaunter.')}">
+      </div>
+      <div id="t_link_${i}" class="${t.rewardType==='link'?'':'hidden'}">
+        <label>URL Reward</label>
+        <input type="text" id="t_url_${i}" value="${esc(t.rewardUrl||'')}" placeholder="https://...">
+      </div>
+    </div>
+  `).join("");
+}
+
+function toggleTierType(i) {
+  const v = document.getElementById("t_type_"+i).value;
+  document.getElementById("t_offline_"+i).classList.toggle("hidden", v==="link");
+  document.getElementById("t_link_"+i).classList.toggle("hidden", v!=="link");
+}
+
+function addTier() {
+  CONFIG.tiers = CONFIG.tiers || [];
+  collectTiers();
+  CONFIG.tiers.push({referrals:5, name:"", desc:"", rewardType:"offline", instruction:"Tunjuk skrin ini kepada staff di kaunter.", rewardUrl:""});
+  renderTiers();
+}
+
+function delTier(i) {
+  collectTiers();
+  CONFIG.tiers.splice(i,1);
+  renderTiers();
+}
+
+function collectTiers() {
+  const n = (CONFIG.tiers||[]).length;
+  const arr = [];
+  for (let i=0;i<n;i++){
+    const type = document.getElementById("t_type_"+i).value;
+    arr.push({
+      referrals: parseInt(document.getElementById("t_ref_"+i).value)||0,
+      name: document.getElementById("t_name_"+i).value,
+      desc: document.getElementById("t_desc_"+i).value,
+      rewardType: type,
+      instruction: document.getElementById("t_instr_"+i)?document.getElementById("t_instr_"+i).value:"",
+      rewardUrl: document.getElementById("t_url_"+i)?document.getElementById("t_url_"+i).value:""
+    });
+  }
+  CONFIG.tiers = arr;
+}
+
+function saveCampaign() {
+  collectTiers();
+  CONFIG.campaignName = document.getElementById("c_campaignName").value;
+  CONFIG.businessName = document.getElementById("c_businessName").value;
+  CONFIG.posterUrl = document.getElementById("c_posterUrl").value;
+  CONFIG.headline = document.getElementById("c_headline").value;
+  CONFIG.subline = document.getElementById("c_subline").value;
+  CONFIG.tiers.sort((a,b)=>a.referrals-b.referrals);
+
+  call({action:"savecampaign", token:TOKEN, campaign_id:CAMPAIGN_ID, config_json:JSON.stringify(CONFIG)})
+    .then(d => {
+      const m = document.getElementById("saveMsg");
+      if (d.ok) { m.textContent = "Tersimpan!"; renderTiers(); setTimeout(()=>m.textContent="",2000); }
+      else m.textContent = d.error || "Ralat simpan";
+    });
+}
+
+// ---------- STATS ----------
+function loadStats() {
+  call({action:"stats", campaign_id:CAMPAIGN_ID, token:TOKEN}).then(d => {
+    if (!d.ok) return;
+    const clicks=d.totalClicks||0, leads=d.totalLeads||0, refs=d.totalReferrals||0;
+    document.getElementById("s_clicks").textContent = clicks;
+    document.getElementById("s_leads").textContent = leads;
+    document.getElementById("s_refs").textContent = refs;
+    document.getElementById("r_cl").textContent = clicks ? Math.round(leads/clicks*100)+"%" : "—";
+    document.getElementById("r_lr").textContent = leads ? Math.round(refs/leads*100)+"%" : "—";
+
+    const lt = document.getElementById("leadTable");
+    if (!d.leads || !d.leads.length) { lt.innerHTML = "<p class='muted'>Tiada lead lagi.</p>"; return; }
+    lt.innerHTML = "<table><tr><th>Nama</th><th>Phone</th><th>Ajak</th></tr>" +
+      d.leads.map(l => `<tr><td>${esc(l.name||'-')}</td><td>${esc(l.phone||'-')}</td><td>${l.count||0}</td></tr>`).join("") +
+      "</table>";
+  });
+}
+
+function copyOptin() {
+  const inp = document.getElementById("optinLink");
+  inp.select(); navigator.clipboard.writeText(inp.value);
+  event.target.textContent = "Disalin!"; setTimeout(()=>event.target.textContent="Salin",1500);
+}
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+</script>
+</body>
+</html>
