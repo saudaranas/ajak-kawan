@@ -14,20 +14,25 @@
   html { scroll-behavior:smooth; }
   body { font-family:-apple-system,'Segoe UI',Roboto,system-ui,sans-serif; background:var(--paper);
          color:var(--ink); line-height:1.55; -webkit-font-smoothing:antialiased; }
-  .wrap { max-width:1080px; margin:0 auto; padding:0 40px; }
+
+  /* ── WRAP: consistent side padding across ALL breakpoints ── */
+  .wrap { max-width:1080px; margin:0 auto; padding:0 60px; }
+  @media (max-width:900px){ .wrap { padding:0 40px; } }
+  @media (max-width:600px){ .wrap { padding:0 24px; } }
+
   h1,h2,h3 { line-height:1.12; letter-spacing:-0.02em; font-weight:800; }
   .eyebrow { font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
              color:var(--brand-deep); }
 
   /* NAV */
-  nav { display:flex; justify-content:space-between; align-items:center; padding:18px 0; }
+  nav { display:flex; justify-content:space-between; align-items:center; padding:20px 0; }
   .logo { font-weight:900; font-size:20px; letter-spacing:-0.03em; }
   .logo span { color:var(--brand); }
-  .nav-cta { background:var(--ink); color:#fff; text-decoration:none; padding:9px 16px;
+  .nav-cta { background:var(--ink); color:#fff; text-decoration:none; padding:9px 18px;
              border-radius:9px; font-size:14px; font-weight:700; }
 
   /* HERO */
-  .hero { padding:52px 0 36px; }
+  .hero { padding:60px 0 44px; }
   .hero h1 { font-size:clamp(34px,6vw,60px); }
   .hero h1 .hl { color:var(--brand); }
   .hero p.lead { font-size:clamp(17px,2.4vw,21px); color:var(--muted); margin:22px 0 30px; max-width:560px; }
@@ -40,7 +45,7 @@
   .hero-note b { color:var(--brand-deep); }
 
   /* SIGNATURE: floating phone mockup + badges */
-  .mockwrap { margin:38px auto 0; position:relative; max-width:340px; padding:20px 0; }
+  .mockwrap { margin:44px auto 0; position:relative; max-width:340px; padding:20px 0; }
   .mockup { width:100%; display:block; position:relative; z-index:2;
             animation:floatPhone 4s ease-in-out infinite; filter:drop-shadow(0 20px 40px rgba(20,20,29,.18)); }
   @keyframes floatPhone { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-12px); } }
@@ -81,14 +86,20 @@
     .net .lnk { opacity:.45 !important; } .net .dot { opacity:1 !important; }
   }
 
-  /* SECTIONS */
-  section { padding:80px 0; }
-  .sec-head { max-width:640px; margin-bottom:48px; }
+  /* ── SECTIONS: consistent breathing room ── */
+  /* Every section gets 96px top + 96px bottom by default */
+  section { padding:96px 0; }
+
+  /* The loop explainer sits tight under hero — intentionally compact */
+  section.loop-section { padding:0 0 64px; }
+
+  .sec-head { max-width:640px; margin-bottom:52px; }
   .sec-head h2 { font-size:clamp(26px,4vw,38px); margin-top:12px; }
   .sec-head p { color:var(--muted); margin-top:12px; font-size:17px; line-height:1.6; }
 
   /* STEPS */
-  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:24px;
+           margin-bottom:0; /* gap to price section handled by section padding */ }
   .step { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; }
   .step .num { display:inline-flex; width:38px; height:38px; border-radius:11px; background:var(--soft);
                color:var(--brand-deep); font-weight:900; align-items:center; justify-content:center;
@@ -138,7 +149,7 @@
   .faq p { padding:0 0 18px; color:var(--muted); font-size:15px; }
 
   /* FOOTER */
-  footer { padding:40px 0; text-align:center; color:var(--muted); font-size:14px; border-top:1px solid var(--line); }
+  footer { padding:48px 0; text-align:center; color:var(--muted); font-size:14px; border-top:1px solid var(--line); }
 
   /* MODAL */
   .overlay { position:fixed; inset:0; background:rgba(20,20,29,.55); display:none;
@@ -169,20 +180,20 @@
   .err { color:var(--brand-deep); font-size:13px; margin-top:8px; }
   .hidden { display:none; }
 
+  /* ── MOBILE ── */
   @media (max-width:720px){
-    .wrap { padding:0 24px; }
-    section { padding:56px 0; }
+    section { padding:64px 0; }
+    section.loop-section { padding:0 0 48px; }
     .sec-head { margin-bottom:36px; }
-    .steps { grid-template-columns:1fr; gap:18px; }
-    .benefits { grid-template-columns:1fr; gap:18px; }
-    .ben { padding:22px; }
-    .step { padding:24px; }
+    .steps { grid-template-columns:1fr; gap:16px; }
+    .benefits { grid-template-columns:1fr; gap:16px; }
+    .ben { padding:20px; }
+    .step { padding:22px; }
     .price-sec { padding:44px 22px; border-radius:22px; }
     .pcard { padding:32px 24px; }
-    .hero { padding:36px 0 28px; }
-    .netwrap { padding:20px; }
+    .hero { padding:44px 0 32px; }
     .badge-float { font-size:11px; padding:7px 10px; }
-    .loopbox { padding:24px 20px 20px; }
+    .loopbox { padding:22px 18px 18px; }
   }
 </style>
 </head>
@@ -200,7 +211,7 @@
   </div>
 </div>
 
-<!-- SALES VIEW (papar bila tiada ?id=) -->
+<!-- SALES VIEW -->
 <div id="salesView">
 <div class="wrap">
   <nav>
@@ -216,11 +227,11 @@
   <p class="lead">Biar pelanggan sedia ada ajak kawan mereka — dan awak dapat pelanggan baru setiap hari, tanpa bakar duit Facebook Ads.</p>
   <div class="hero-cta">
     <a href="#harga" class="btn btn-primary">Mula Hari Ini</a>
-    <a href="#cara" class="btn btn-ghost">Tengok Cara Kerja</a>
+    <a href="https://ajakkawan.online/?id=KZBCS7BC9&ref=743Z3B" target="_blank" class="btn btn-ghost">Lihat Demo</a>
   </div>
   <p class="hero-note"><b>Tawaran Early Bird:</b> RM37/bulan untuk 15 pendaftar pertama sahaja.</p>
 
-  <!-- SIGNATURE: floating phone mockup + badges -->
+  <!-- floating phone mockup -->
   <div class="mockwrap">
     <div class="badge-float b1"><span class="pulse"></span> +1 lead baru</div>
     <div class="badge-float b2"><span class="em">🎁</span> Reward unlock!</div>
@@ -230,7 +241,7 @@
 </header>
 
 <!-- VIRAL LOOP EXPLAINER -->
-<section class="wrap" style="padding-top:32px;padding-bottom:32px">
+<section class="wrap loop-section">
   <div class="loopbox">
     <svg class="net" viewBox="0 0 800 200" role="img" aria-label="Satu lead membawa ramai lead">
       <line class="lnk" x1="110" y1="100" x2="320" y2="45"  style="animation:drawLine .5s ease .3s forwards"/>
@@ -256,7 +267,7 @@
   </div>
 </section>
 
-<!-- BENEFITS (apa awak dapat) -->
+<!-- BENEFITS -->
 <section id="benefit" class="wrap">
   <div class="sec-head">
     <div class="eyebrow">Apa Awak Dapat</div>
@@ -271,7 +282,7 @@
   </div>
 </section>
 
-<!-- ADVANTAGES (kenapa lebih baik) -->
+<!-- KENAPA AJAKKAWAN -->
 <section id="advantage" class="wrap">
   <div class="sec-head">
     <div class="eyebrow">Kenapa AjakKawan</div>
@@ -286,7 +297,7 @@
   </div>
 </section>
 
-<!-- FEATURES (cara kerja + ciri) -->
+<!-- CARA KERJA -->
 <section id="cara" class="wrap">
   <div class="sec-head">
     <div class="eyebrow">Cara Kerja</div>
@@ -357,20 +368,16 @@
   </div>
 </footer>
 
-<!-- end salesView -->
-</div>
+</div><!-- end salesView -->
 
 <!-- PAYMENT MODAL -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <button class="x" onclick="closeModal()">×</button>
-
     <div class="msteps">
       <div class="mstep-bar on" id="bar1"></div>
       <div class="mstep-bar" id="bar2"></div>
     </div>
-
-    <!-- STEP 1: QR + FORM -->
     <div id="step1">
       <h3>Langkah 1 — Bayar & Isi Butiran</h3>
       <p class="msub">Imbas QR untuk bayar RM37, kemudian isi butiran awak.</p>
@@ -388,8 +395,6 @@
       <p class="err" id="formErr"></p>
       <button class="btn btn-primary" onclick="toStep2()">Teruskan</button>
     </div>
-
-    <!-- STEP 2: SUMMARY + WHATSAPP -->
     <div id="step2" class="hidden">
       <h3>Langkah 2 — Sahkan Pesanan</h3>
       <p class="msub">Semak butiran, kemudian hantar bukti bayar melalui WhatsApp untuk aktifkan akaun.</p>
@@ -403,18 +408,14 @@
       <button class="btn btn-primary" onclick="sendWhatsApp()">Hantar Bukti via WhatsApp</button>
       <button class="btn btn-ghost" onclick="backStep1()">Kembali</button>
     </div>
-
   </div>
 </div>
 
 <script>
-// ====== TETAPAN — TUKAR INI ======
-const ADMIN_WHATSAPP = "60123456789";   // nombor WhatsApp Nasrol (format antarabangsa, tiada +)
-const QR_IMAGE_URL = "";                // URL gambar QR pembayaran (kosongkan jika belum ada)
+const ADMIN_WHATSAPP = "60123456789";
+const QR_IMAGE_URL = "";
 const GAS_URL = "https://script.google.com/macros/s/AKfycbx1d5r79Rr8xLFdjW_BkcDOd27ZHO1f_emxeCCwioPc0UqD1MQ5O8fI6-F5V5D9VW9l/exec";
-// =================================
 
-// ROUTER: ?id= => optin, jika tiada => salespage
 const _p = new URLSearchParams(location.search);
 const CAMPAIGN_ID = _p.get("id") || "";
 const REF = _p.get("ref") || "";
@@ -423,7 +424,7 @@ if (CAMPAIGN_ID) {
   document.getElementById("salesView").classList.add("hidden");
   document.getElementById("optinView").classList.remove("hidden");
   initOptin();
-} // else: salesView papar secara default
+}
 
 function initOptin() {
   fetch(GAS_URL + "?action=trackclick&campaign_id=" + encodeURIComponent(CAMPAIGN_ID) +
@@ -494,9 +495,7 @@ function showRecover() {
     .then(d => {
       if (d.ok && d.code) {
         location.href = "share/?id=" + encodeURIComponent(CAMPAIGN_ID) + "&code=" + d.code;
-      } else {
-        alert(d.error || "Nombor tak dijumpai. Sila daftar dahulu.");
-      }
+      } else { alert(d.error || "Nombor tak dijumpai. Sila daftar dahulu."); }
     })
     .catch(() => alert("Ralat sambungan. Cuba lagi."));
 }
@@ -517,11 +516,9 @@ function toStep2(){
   if (!name) { err.textContent = "Sila isi nama / bisnes."; return; }
   if (!email || email.indexOf("@")<0) { err.textContent = "Sila isi email yang sah."; return; }
   if (phone.length < 9) { err.textContent = "Sila isi nombor WhatsApp yang sah."; return; }
-
   document.getElementById("s_name").textContent = name;
   document.getElementById("s_email").textContent = email;
   document.getElementById("s_phone").textContent = phone;
-
   document.getElementById("step1").classList.add("hidden");
   document.getElementById("step2").classList.remove("hidden");
   document.getElementById("bar2").classList.add("on");
