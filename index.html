@@ -9,6 +9,7 @@
     --ink:#16161d; --paper:#fbfaf7; --card:#ffffff;
     --brand:#ff5436; --brand-deep:#d8341c; --node:#2bb673;
     --muted:#6b6b73; --line:#ececea; --soft:#fff1ed;
+    --tint:#fff4f0;
   }
   *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
   html { scroll-behavior:smooth; }
@@ -66,6 +67,9 @@
   .section { padding-top: 80px; padding-bottom: 80px; }
   .section-loop { padding-top: 0; padding-bottom: 64px; }
   .section-divider { height: 1px; background: var(--line); margin: 0 32px; }
+  /* Band: jalur warna penuh lebar untuk selang-seli background section */
+  .band-tint { background: var(--tint); }
+  .band-tint .section { padding-top: 80px; padding-bottom: 80px; }
   .sec-head { max-width:600px; margin-bottom:44px; }
   .sec-head h2 { font-size:clamp(24px,3.8vw,36px); margin-top:10px; }
   .sec-head p { color:var(--muted); margin-top:12px; font-size:16px; line-height:1.65; }
@@ -208,9 +212,8 @@
     </div>
   </div>
 
-  <div class="section-divider"></div>
-
-  <!-- BENEFITS -->
+  <!-- BENEFITS (band tint) -->
+  <div class="band-tint">
   <div id="benefit" class="wrap section">
     <div class="sec-head">
       <div class="eyebrow">Apa Awak Dapat</div>
@@ -224,10 +227,9 @@
       <div class="ben"><div class="ic">😌</div><div><h3>Pemasaran tanpa stress</h3><p>Tiada perlu reka iklan, tulis copy, atau urus bajet ads. Sistem buat kerja, awak fokus jual.</p></div></div>
     </div>
   </div>
+  </div>
 
-  <div class="section-divider"></div>
-
-  <!-- KENAPA AJAKKAWAN -->
+  <!-- KENAPA AJAKKAWAN (cream) -->
   <div id="advantage" class="wrap section">
     <div class="sec-head">
       <div class="eyebrow">Kenapa AjakKawan</div>
@@ -242,9 +244,8 @@
     </div>
   </div>
 
-  <div class="section-divider"></div>
-
-  <!-- CARA KERJA -->
+  <!-- CARA KERJA (band tint) -->
+  <div class="band-tint">
   <div id="cara" class="wrap section">
     <div class="sec-head">
       <div class="eyebrow">Cara Kerja</div>
@@ -257,10 +258,9 @@
       <div class="step"><div class="num">3</div><h3>Pantau dari dashboard</h3><p>Setiap kawan yang join = lead baru. Awak lihat klik, lead, dan referral dari satu tempat.</p></div>
     </div>
   </div>
+  </div>
 
-  <div class="section-divider"></div>
-
-  <!-- PRICING -->
+  <!-- PRICING (cream) -->
   <div id="harga" class="wrap section">
     <div class="price-sec">
       <div class="eyebrow">Harga</div>
@@ -302,9 +302,8 @@
     </div>
   </div>
 
-  <div class="section-divider"></div>
-
-  <!-- FAQ -->
+  <!-- FAQ (band tint) -->
+  <div class="band-tint">
   <div class="wrap section">
     <div class="sec-head">
       <div class="eyebrow">Soalan Lazim</div>
@@ -316,6 +315,7 @@
       <details><summary>Perlu kemahiran teknikal?</summary><p>Tidak. Awak isi borang ringkas dalam dashboard, set ganjaran, dan kongsi link. Kami uruskan bahagian teknikal.</p></details>
       <details><summary>Boleh batal langganan?</summary><p>Ya, bila-bila masa. Tiada kontrak terikat.</p></details>
     </div>
+  </div>
   </div>
 
   <footer>
