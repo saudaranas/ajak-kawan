@@ -25,9 +25,16 @@
   .logo span { color:var(--brand); }
   .nav-cta { background:var(--ink); color:#fff; text-decoration:none; padding:9px 18px; border-radius:9px; font-size:14px; font-weight:700; }
   .hero { padding-top:52px; padding-bottom:48px; }
+  .hero-inner { display:block; }
   .hero h1 { font-size:clamp(30px,5.5vw,58px); }
   .hero h1 .hl { color:var(--brand); }
   .hero p.lead { font-size:clamp(16px,2.2vw,20px); color:var(--muted); margin-top:18px; margin-bottom:28px; max-width:540px; }
+  /* Desktop: 2 kolum (teks kiri, mockup kanan) */
+  @media (min-width:880px){
+    .hero-inner { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center; }
+    .hero-text { padding-top:8px; }
+    .hero .mockwrap { margin:0 auto; }
+  }
   .hero-cta { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
   .btn { display:inline-block; text-decoration:none; padding:14px 24px; border-radius:11px; font-weight:800; font-size:16px; cursor:pointer; border:none; line-height:1; }
   .btn-primary { background:var(--brand); color:#fff; box-shadow:0 8px 20px rgba(255,84,54,.28); }
@@ -154,19 +161,23 @@
 
   <!-- HERO -->
   <div class="wrap hero">
-    <div class="eyebrow">Sistem Referral Untuk Bisnes Malaysia</div>
-    <h1>Dapat pelanggan baru <span class="hl">tanpa belanja iklan.</span></h1>
-    <p class="lead">Setiap pelanggan yang puas hati boleh bawa 3&ndash;5 kawan baru &mdash; secara automatik. Tanpa awak kejar, tanpa bakar duit Facebook Ads.</p>
-    <div class="hero-cta">
-      <a href="#harga" class="btn btn-primary">Mula Hari Ini</a>
-      <a href="https://ajakkawan.online/?id=K4KAH42FW" target="_blank" class="btn btn-ghost">Lihat Demo</a>
-    </div>
-    <p class="hero-note"><b>Mula dari RM15/bulan.</b> Pakej tahunan RM100 — setup percuma, jimat RM80.</p>
-    <div class="mockwrap">
-      <div class="badge-float b1"><span class="pulse"></span> +1 lead baru</div>
-      <div class="badge-float b2">🎁 Reward unlock!</div>
-      <div class="badge-float b3">🔗 Link dikongsi</div>
-      <img class="mockup" src="https://i.postimg.cc/wjcXpwn0/Screenshot-20260619-064738-removebg-preview.png" alt="Demo AjakKawan">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="eyebrow">Sistem Referral Untuk Bisnes Malaysia</div>
+        <h1>Dapat pelanggan baru <span class="hl">tanpa belanja iklan.</span></h1>
+        <p class="lead">Setiap pelanggan yang puas hati boleh bawa 3&ndash;5 kawan baru &mdash; secara automatik. Tanpa awak kejar, tanpa bakar duit Facebook Ads.</p>
+        <div class="hero-cta">
+          <a href="#harga" class="btn btn-primary">Mula Hari Ini</a>
+          <a href="https://ajakkawan.online/?id=K4KAH42FW" target="_blank" class="btn btn-ghost">Lihat Demo</a>
+        </div>
+        <p class="hero-note"><b>Mula dari RM15/bulan.</b> Pakej tahunan RM100 — setup percuma, jimat RM80.</p>
+      </div>
+      <div class="mockwrap">
+        <div class="badge-float b1"><span class="pulse"></span> +1 lead baru</div>
+        <div class="badge-float b2">🎁 Reward unlock!</div>
+        <div class="badge-float b3">🔗 Link dikongsi</div>
+        <img class="mockup" src="https://i.postimg.cc/wjcXpwn0/Screenshot-20260619-064738-removebg-preview.png" alt="Demo AjakKawan">
+      </div>
     </div>
   </div>
 
