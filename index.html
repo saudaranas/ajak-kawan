@@ -17,97 +17,36 @@
     background:var(--paper); color:var(--ink);
     line-height:1.55; -webkit-font-smoothing:antialiased;
   }
-
-  /* ── WRAP: padding kiri kanan yang seragam ── */
-  .wrap {
-    max-width:1080px;
-    margin:0 auto;
-    padding-left:32px;
-    padding-right:32px;
-  }
-
+  .wrap { max-width:1080px; margin:0 auto; padding-left:32px; padding-right:32px; }
   h1,h2,h3 { line-height:1.12; letter-spacing:-0.02em; font-weight:800; }
-  .eyebrow {
-    font-size:11px; font-weight:700; letter-spacing:.14em;
-    text-transform:uppercase; color:var(--brand-deep);
-  }
-
-  /* NAV */
-  nav {
-    display:flex; justify-content:space-between; align-items:center;
-    padding-top:20px; padding-bottom:20px;
-  }
+  .eyebrow { font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--brand-deep); }
+  nav { display:flex; justify-content:space-between; align-items:center; padding-top:20px; padding-bottom:20px; }
   .logo { font-weight:900; font-size:20px; letter-spacing:-0.03em; }
   .logo span { color:var(--brand); }
-  .nav-cta {
-    background:var(--ink); color:#fff; text-decoration:none;
-    padding:9px 18px; border-radius:9px; font-size:14px; font-weight:700;
-  }
-
-  /* HERO */
-  .hero {
-    padding-top:52px;
-    padding-bottom:48px;
-  }
+  .nav-cta { background:var(--ink); color:#fff; text-decoration:none; padding:9px 18px; border-radius:9px; font-size:14px; font-weight:700; }
+  .hero { padding-top:52px; padding-bottom:48px; }
   .hero h1 { font-size:clamp(30px,5.5vw,58px); }
   .hero h1 .hl { color:var(--brand); }
-  .hero p.lead {
-    font-size:clamp(16px,2.2vw,20px); color:var(--muted);
-    margin-top:18px; margin-bottom:28px; max-width:540px;
-  }
+  .hero p.lead { font-size:clamp(16px,2.2vw,20px); color:var(--muted); margin-top:18px; margin-bottom:28px; max-width:540px; }
   .hero-cta { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
-  .btn {
-    display:inline-block; text-decoration:none; padding:14px 24px;
-    border-radius:11px; font-weight:800; font-size:16px;
-    cursor:pointer; border:none; line-height:1;
-  }
+  .btn { display:inline-block; text-decoration:none; padding:14px 24px; border-radius:11px; font-weight:800; font-size:16px; cursor:pointer; border:none; line-height:1; }
   .btn-primary { background:var(--brand); color:#fff; box-shadow:0 8px 20px rgba(255,84,54,.28); }
   .btn-ghost { background:transparent; color:var(--ink); border:1.5px solid var(--line); }
   .hero-note { font-size:13px; color:var(--muted); margin-top:14px; }
   .hero-note b { color:var(--brand-deep); }
-
-  /* PHONE MOCKUP */
-  .mockwrap {
-    margin:40px auto 0; position:relative;
-    max-width:300px; padding:20px 0;
-  }
-  .mockup {
-    width:100%; display:block; position:relative; z-index:2;
-    animation:floatPhone 4s ease-in-out infinite;
-    filter:drop-shadow(0 20px 40px rgba(20,20,29,.18));
-  }
+  .mockwrap { margin:40px auto 0; position:relative; max-width:300px; padding:20px 0; }
+  .mockup { width:100%; display:block; position:relative; z-index:2; animation:floatPhone 4s ease-in-out infinite; filter:drop-shadow(0 20px 40px rgba(20,20,29,.18)); }
   @keyframes floatPhone { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-
-  .badge-float {
-    position:absolute; z-index:3; background:#fff;
-    border:1px solid var(--line);
-    box-shadow:0 8px 22px rgba(20,20,29,.14);
-    border-radius:13px; padding:9px 12px;
-    font-size:12px; font-weight:700;
-    display:flex; align-items:center; gap:7px;
-    opacity:0; white-space:nowrap;
-  }
-  .badge-float .pulse {
-    width:7px; height:7px; border-radius:50%; background:var(--node);
-    animation:pulse 2s infinite;
-  }
+  .badge-float { position:absolute; z-index:3; background:#fff; border:1px solid var(--line); box-shadow:0 8px 22px rgba(20,20,29,.14); border-radius:13px; padding:9px 12px; font-size:12px; font-weight:700; display:flex; align-items:center; gap:7px; opacity:0; white-space:nowrap; }
+  .badge-float .pulse { width:7px; height:7px; border-radius:50%; background:var(--node); animation:pulse 2s infinite; }
   .badge-float.b1 { top:30px; left:-10px; animation:floatIn .5s ease 1s forwards, bob 3s ease-in-out 1.5s infinite; }
   .badge-float.b2 { top:130px; right:-14px; animation:floatIn .5s ease 1.4s forwards, bob 3.4s ease-in-out 1.9s infinite; }
   .badge-float.b3 { bottom:60px; left:-6px; animation:floatIn .5s ease 1.8s forwards, bob 3.2s ease-in-out 2.3s infinite; }
   @keyframes floatIn { from{opacity:0;transform:translateY(10px) scale(.9)} to{opacity:1;transform:translateY(0) scale(1)} }
   @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
   @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(43,182,115,.5)} 70%{box-shadow:0 0 0 8px rgba(43,182,115,0)} 100%{box-shadow:0 0 0 0 rgba(43,182,115,0)} }
-  @media (prefers-reduced-motion:reduce){
-    .mockup{animation:none}
-    .badge-float{animation:none !important;opacity:1}
-    .badge-float .pulse{animation:none}
-  }
-
-  /* LOOP BOX */
-  .loopbox {
-    background:var(--card); border:1px solid var(--line);
-    border-radius:18px; padding:24px 20px 20px; text-align:center;
-  }
+  @media (prefers-reduced-motion:reduce){ .mockup{animation:none} .badge-float{animation:none !important;opacity:1} .badge-float .pulse{animation:none} }
+  .loopbox { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:24px 20px 20px; text-align:center; }
   .loopbox .net { width:100%; max-width:520px; height:auto; display:block; margin:0 auto; }
   .net .lnk { stroke:var(--node); stroke-width:2; opacity:0; }
   .net .seed { fill:var(--brand); }
@@ -115,84 +54,30 @@
   .net .ring { fill:none; stroke:var(--brand); stroke-width:2; opacity:.25; }
   @keyframes drawLine { to{opacity:.45;stroke-dashoffset:0} }
   @keyframes popDot { to{opacity:1;transform:scale(1)} }
-  .loopcap {
-    margin-top:14px; font-size:15px; color:var(--muted);
-    max-width:440px; margin-left:auto; margin-right:auto;
-  }
+  .loopcap { margin-top:14px; font-size:15px; color:var(--muted); max-width:440px; margin-left:auto; margin-right:auto; }
   .loopcap b { color:var(--ink); }
-
-  /* ── SECTION SYSTEM ──
-     Setiap section ada padding-top dan padding-bottom yang fixed.
-     TIADA cascade, TIADA override yang conflict.
-  ── */
-  .section {
-    padding-top: 80px;
-    padding-bottom: 80px;
-  }
-  .section-loop {
-    padding-top: 0;
-    padding-bottom: 64px;
-  }
-  /* Divider visual antara sections */
-  .section-divider {
-    height: 1px;
-    background: var(--line);
-    margin: 0 32px;
-  }
-
-  /* SEC HEAD */
+  .section { padding-top: 80px; padding-bottom: 80px; }
+  .section-loop { padding-top: 0; padding-bottom: 64px; }
+  .section-divider { height: 1px; background: var(--line); margin: 0 32px; }
   .sec-head { max-width:600px; margin-bottom:44px; }
   .sec-head h2 { font-size:clamp(24px,3.8vw,36px); margin-top:10px; }
   .sec-head p { color:var(--muted); margin-top:12px; font-size:16px; line-height:1.65; }
-
-  /* BENEFITS GRID */
   .benefits { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-  .ben {
-    display:flex; gap:14px; align-items:flex-start;
-    background:var(--card); border:1px solid var(--line);
-    border-radius:14px; padding:22px;
-  }
-  .ben .ic {
-    flex-shrink:0; width:38px; height:38px; border-radius:9px;
-    background:var(--soft); display:flex; align-items:center;
-    justify-content:center; font-size:18px;
-  }
+  .ben { display:flex; gap:14px; align-items:flex-start; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; }
+  .ben .ic { flex-shrink:0; width:38px; height:38px; border-radius:9px; background:var(--soft); display:flex; align-items:center; justify-content:center; font-size:18px; }
   .ben h3 { font-size:15px; margin-bottom:5px; }
   .ben p { color:var(--muted); font-size:13.5px; line-height:1.6; }
-
-  /* STEPS */
   .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-  .step {
-    background:var(--card); border:1px solid var(--line);
-    border-radius:14px; padding:24px;
-  }
-  .step .num {
-    display:inline-flex; width:36px; height:36px; border-radius:10px;
-    background:var(--soft); color:var(--brand-deep);
-    font-weight:900; align-items:center; justify-content:center;
-    font-size:16px; margin-bottom:12px;
-  }
+  .step { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:24px; }
+  .step .num { display:inline-flex; width:36px; height:36px; border-radius:10px; background:var(--soft); color:var(--brand-deep); font-weight:900; align-items:center; justify-content:center; font-size:16px; margin-bottom:12px; }
   .step h3 { font-size:17px; margin-bottom:6px; }
   .step p { color:var(--muted); font-size:13.5px; line-height:1.6; }
-
-  /* PRICING */
-  .price-sec {
-    background:var(--ink); color:#fff;
-    border-radius:22px; padding:56px 32px; text-align:center;
-  }
+  .price-sec { background:var(--ink); color:#fff; border-radius:22px; padding:56px 32px; text-align:center; }
   .price-sec .eyebrow { color:#ffb4a4; }
   .price-sec h2 { font-size:clamp(26px,3.8vw,38px); margin:10px 0 6px; color:#fff; }
   .price-sec .psub { color:#b9b9c2; margin-bottom:28px; }
-  .pcard {
-    background:#fff; color:var(--ink); max-width:360px;
-    margin:0 auto; border-radius:18px; padding:30px 24px;
-    text-align:left; position:relative;
-  }
-  .pflag {
-    position:absolute; top:-12px; left:50%; transform:translateX(-50%);
-    background:var(--brand); color:#fff; font-size:11px;
-    font-weight:800; padding:5px 14px; border-radius:20px; white-space:nowrap;
-  }
+  .pcard { background:#fff; color:var(--ink); max-width:360px; margin:0 auto; border-radius:18px; padding:30px 24px; text-align:left; position:relative; }
+  .pflag { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--brand); color:#fff; font-size:11px; font-weight:800; padding:5px 14px; border-radius:20px; white-space:nowrap; }
   .pprice { display:flex; align-items:baseline; gap:6px; margin:8px 0 4px; }
   .pprice .rm { font-size:18px; font-weight:700; }
   .pprice .amt { font-size:50px; font-weight:900; letter-spacing:-0.03em; }
@@ -200,87 +85,43 @@
   .pold { color:var(--muted); font-size:13px; margin-bottom:16px; }
   .pold s { opacity:.7; }
   .plist { list-style:none; margin:16px 0 22px; }
-  .plist li {
-    padding:10px 0 10px 26px; position:relative;
-    font-size:14px; border-top:1px solid var(--line);
-  }
+  .plist li { padding:10px 0 10px 26px; position:relative; font-size:14px; border-top:1px solid var(--line); }
   .plist li:first-child { border-top:none; }
-  .plist li::before { content:"✓"; position:absolute; left:0; color:var(--node); font-weight:900; }
+  .plist li::before { content:"\2713"; position:absolute; left:0; color:var(--node); font-weight:900; }
   .pcard .btn-primary { width:100%; text-align:center; }
   .scarce { margin-top:14px; font-size:12px; color:#ffb4a4; }
-
-  /* FAQ */
-  .faq details {
-    background:var(--card); border:1px solid var(--line);
-    border-radius:12px; padding:0 20px; margin-bottom:10px;
-  }
-  .faq summary {
-    padding:18px 0; font-weight:700; cursor:pointer;
-    list-style:none; font-size:15px;
-    display:flex; justify-content:space-between; align-items:center;
-  }
+  .faq details { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:0 20px; margin-bottom:10px; }
+  .faq summary { padding:18px 0; font-weight:700; cursor:pointer; list-style:none; font-size:15px; display:flex; justify-content:space-between; align-items:center; }
   .faq summary::-webkit-details-marker { display:none; }
   .faq summary::after { content:"+"; color:var(--brand); font-weight:800; font-size:20px; }
-  .faq details[open] summary::after { content:"–"; }
+  .faq details[open] summary::after { content:"\2013"; }
   .faq p { padding:0 0 16px; color:var(--muted); font-size:14.5px; line-height:1.65; }
-
-  /* FOOTER */
-  footer {
-    padding:44px 0; text-align:center;
-    color:var(--muted); font-size:13px;
-    border-top:1px solid var(--line);
-  }
-
-  /* MODAL */
-  .overlay {
-    position:fixed; inset:0; background:rgba(20,20,29,.55);
-    display:none; align-items:flex-start; justify-content:center;
-    padding:20px; z-index:50; overflow-y:auto;
-  }
+  footer { padding:44px 0; text-align:center; color:var(--muted); font-size:13px; border-top:1px solid var(--line); }
+  .overlay { position:fixed; inset:0; background:rgba(20,20,29,.55); display:none; align-items:flex-start; justify-content:center; padding:20px; z-index:50; overflow-y:auto; }
   .overlay.on { display:flex; }
-  .modal {
-    background:#fff; border-radius:18px; max-width:420px;
-    width:100%; margin:30px 0; padding:24px 22px; position:relative;
-  }
-  .modal .x {
-    position:absolute; top:14px; right:16px; background:none;
-    border:none; font-size:22px; cursor:pointer; color:var(--muted);
-  }
+  .modal { background:#fff; border-radius:18px; max-width:420px; width:100%; margin:30px 0; padding:24px 22px; position:relative; }
+  .modal .x { position:absolute; top:14px; right:16px; background:none; border:none; font-size:22px; cursor:pointer; color:var(--muted); }
   .msteps { display:flex; gap:8px; margin-bottom:20px; }
   .mstep-bar { flex:1; height:4px; border-radius:3px; background:var(--line); }
   .mstep-bar.on { background:var(--brand); }
   .modal h3 { font-size:20px; margin-bottom:4px; }
   .modal .msub { color:var(--muted); font-size:13px; margin-bottom:16px; }
-  .qrbox {
-    text-align:center; background:var(--soft);
-    border-radius:12px; padding:20px; margin-bottom:16px;
-  }
+  .qrbox { text-align:center; background:var(--soft); border-radius:12px; padding:20px; margin-bottom:16px; }
   .qrbox img { width:160px; height:160px; object-fit:contain; border-radius:8px; background:#fff; padding:6px; }
   .qrbox .amt { font-weight:900; font-size:22px; margin-top:10px; }
   .qrbox .lbl { font-size:12px; color:var(--muted); }
   label { display:block; font-size:12px; font-weight:700; margin:10px 0 4px; }
-  .modal input {
-    width:100%; padding:11px 12px; border:1.5px solid var(--line);
-    border-radius:9px; font-size:15px; outline:none; font-family:inherit;
-  }
+  .modal input { width:100%; padding:11px 12px; border:1.5px solid var(--line); border-radius:9px; font-size:15px; outline:none; font-family:inherit; }
   .modal input:focus { border-color:var(--brand); }
   .modal .btn-primary { width:100%; margin-top:18px; text-align:center; }
   .modal .btn-ghost { width:100%; margin-top:8px; text-align:center; }
-  .summary-row {
-    display:flex; justify-content:space-between;
-    padding:10px 0; border-top:1px solid var(--line); font-size:14px;
-  }
+  .summary-row { display:flex; justify-content:space-between; padding:10px 0; border-top:1px solid var(--line); font-size:14px; }
   .summary-row:first-child { border-top:none; }
   .summary-row b { font-weight:700; }
   .err { color:var(--brand-deep); font-size:12px; margin-top:6px; }
   .hidden { display:none !important; }
-
-  /* OPTIN */
   #optinView { padding:0; }
-  #optinCard {
-    background:#fff; border-radius:16px; padding:28px 24px;
-    box-shadow:0 4px 24px rgba(0,0,0,.06);
-  }
+  #optinCard { background:#fff; border-radius:16px; padding:28px 24px; box-shadow:0 4px 24px rgba(0,0,0,.06); }
 </style>
 </head>
 <body>
@@ -300,7 +141,6 @@
 <!-- SALES VIEW -->
 <div id="salesView">
 
-  <!-- NAV -->
   <div class="wrap">
     <nav>
       <div class="logo">Ajak<span>Kawan</span></div>
@@ -312,10 +152,10 @@
   <div class="wrap hero">
     <div class="eyebrow">Sistem Referral Untuk Bisnes Malaysia</div>
     <h1>Dapat pelanggan baru <span class="hl">tanpa belanja iklan.</span></h1>
-    <p class="lead">Biar pelanggan sedia ada ajak kawan mereka — dan awak dapat pelanggan baru setiap hari, tanpa bakar duit Facebook Ads.</p>
+    <p class="lead">Setiap pelanggan yang puas hati boleh bawa 3&ndash;5 kawan baru &mdash; secara automatik. Tanpa awak kejar, tanpa bakar duit Facebook Ads.</p>
     <div class="hero-cta">
       <a href="#harga" class="btn btn-primary">Mula Hari Ini</a>
-      <a href="https://ajakkawan.online/?id=KZBCS7BC9&ref=743Z3B" target="_blank" class="btn btn-ghost">Lihat Demo</a>
+      <a href="https://ajakkawan.online/?id=K4KAH42FW" target="_blank" class="btn btn-ghost">Lihat Demo</a>
     </div>
     <p class="hero-note"><b>Tawaran Early Bird:</b> RM37/bulan untuk 15 pendaftar pertama sahaja.</p>
     <div class="mockwrap">
@@ -349,11 +189,10 @@
         <circle class="dot" cx="560" cy="145" r="7" style="animation:popDot .3s ease 1.55s forwards"/>
         <circle class="dot" cx="560" cy="185" r="7" style="animation:popDot .3s ease 1.6s forwards"/>
       </svg>
-      <p class="loopcap">Lead share kempen untuk dapatkan reward — <b>anda dapat lebih banyak lead!</b></p>
+      <p class="loopcap">Lead share kempen untuk dapatkan reward &mdash; <b>anda dapat lebih banyak lead!</b></p>
     </div>
   </div>
 
-  <!-- DIVIDER -->
   <div class="section-divider"></div>
 
   <!-- BENEFITS -->
@@ -361,17 +200,16 @@
     <div class="sec-head">
       <div class="eyebrow">Apa Awak Dapat</div>
       <h2>Pelanggan lebih ramai, kos marketing lebih rendah.</h2>
-      <p>Bayangkan setiap pelanggan yang puas hati terus ajak 3–5 kawan datang. Itulah yang AjakKawan buat untuk bisnes awak — secara automatik.</p>
+      <p>Bayangkan setiap pelanggan yang puas hati terus ajak 3&ndash;5 kawan datang. Itulah yang AjakKawan buat untuk bisnes awak &mdash; secara automatik.</p>
     </div>
     <div class="benefits">
-      <div class="ben"><div class="ic">📈</div><div><h3>Pelanggan datang berganda</h3><p>Satu pelanggan boleh bawa belasan pelanggan baru. Bisnes membesar tanpa awak kejar satu-satu.</p></div></div>
-      <div class="ben"><div class="ic">💰</div><div><h3>Jimat ribuan ringgit iklan</h3><p>Berhenti bakar duit Facebook Ads setiap bulan. Pelanggan sedia ada jadi pemasar awak — percuma.</p></div></div>
+      <div class="ben"><div class="ic">📈</div><div><h3>Pelanggan datang berganda</h3><p>Satu pelanggan boleh bawa beberapa pelanggan baru. Bisnes membesar tanpa awak kejar satu-satu.</p></div></div>
+      <div class="ben"><div class="ic">💰</div><div><h3>Jimat duit iklan</h3><p>Berhenti bakar duit iklan setiap bulan. Pelanggan sedia ada jadi pemasar awak &mdash; percuma.</p></div></div>
       <div class="ben"><div class="ic">❤️</div><div><h3>Pelanggan jadi lebih setia</h3><p>Bila pelanggan dapat ganjaran kerana ajak kawan, mereka rasa dihargai dan datang balik lagi.</p></div></div>
       <div class="ben"><div class="ic">😌</div><div><h3>Pemasaran tanpa stress</h3><p>Tiada perlu reka iklan, tulis copy, atau urus bajet ads. Sistem buat kerja, awak fokus jual.</p></div></div>
     </div>
   </div>
 
-  <!-- DIVIDER -->
   <div class="section-divider"></div>
 
   <!-- KENAPA AJAKKAWAN -->
@@ -379,7 +217,7 @@
     <div class="sec-head">
       <div class="eyebrow">Kenapa AjakKawan</div>
       <h2>Lebih bijak dari cara pemasaran lama.</h2>
-      <p>Iklan berbayar makin mahal dan susah dijejak. AjakKawan guna kuasa rangkaian pelanggan awak — yang lebih dipercayai dan kos hampir sifar.</p>
+      <p>Iklan berbayar makin mahal dan susah dijejak. AjakKawan guna kuasa rangkaian pelanggan awak &mdash; yang lebih dipercayai dan kos hampir sifar.</p>
     </div>
     <div class="benefits">
       <div class="ben"><div class="ic">🤝</div><div><h3>Cadangan kawan lebih dipercayai</h3><p>Orang lebih percaya ajakan kawan daripada iklan. Itu sebab referral menukar lebih ramai jadi pelanggan.</p></div></div>
@@ -389,7 +227,6 @@
     </div>
   </div>
 
-  <!-- DIVIDER -->
   <div class="section-divider"></div>
 
   <!-- CARA KERJA -->
@@ -400,13 +237,12 @@
       <p>Tiada kemahiran teknikal diperlukan. Awak boleh siapkan semua dalam masa beberapa minit.</p>
     </div>
     <div class="steps">
-      <div class="step"><div class="num">1</div><h3>Set ganjaran awak</h3><p>Tetapkan reward — air percuma, diskaun, ebook, apa sahaja. Tebus di kaunter atau bagi link.</p></div>
+      <div class="step"><div class="num">1</div><h3>Set ganjaran awak</h3><p>Tetapkan reward &mdash; air percuma, diskaun, ebook, apa sahaja. Tebus di kaunter atau bagi link.</p></div>
       <div class="step"><div class="num">2</div><h3>Kongsi satu link</h3><p>Pelanggan daftar, dapat link unik mereka sendiri, dan kongsi pada kawan melalui WhatsApp.</p></div>
       <div class="step"><div class="num">3</div><h3>Pantau dari dashboard</h3><p>Setiap kawan yang join = lead baru. Awak lihat klik, lead, dan referral dari satu tempat.</p></div>
     </div>
   </div>
 
-  <!-- DIVIDER -->
   <div class="section-divider"></div>
 
   <!-- PRICING -->
@@ -424,7 +260,7 @@
           <li>Kempen referral penuh</li>
           <li>Reward tiers tanpa had</li>
           <li>Dashboard statistik (klik, lead, referral)</li>
-          <li>Link optin & share automatik</li>
+          <li>Link optin &amp; share automatik</li>
           <li>Tebus offline atau link</li>
         </ul>
         <button class="btn btn-primary" onclick="openModal()">Sertai Early Bird</button>
@@ -433,7 +269,6 @@
     </div>
   </div>
 
-  <!-- DIVIDER -->
   <div class="section-divider"></div>
 
   <!-- FAQ -->
@@ -443,7 +278,7 @@
       <h2>Perkara yang peniaga selalu tanya.</h2>
     </div>
     <div class="faq">
-      <details><summary>Saya bukan kedai makan, boleh guna?</summary><p>Boleh. AjakKawan untuk mana-mana bisnes — produk, servis, kelas, apa sahaja yang ada pelanggan dan ganjaran untuk ditawarkan.</p></details>
+      <details><summary>Saya bukan kedai makan, boleh guna?</summary><p>Boleh. Kedai makan, salon, butik, kelas tuisyen, jualan online &mdash; mana-mana bisnes yang ada pelanggan dan boleh tawarkan ganjaran. Awak yang tentukan rewardnya.</p></details>
       <details><summary>Macam mana pelanggan tebus ganjaran?</summary><p>Dua cara. Untuk kedai fizikal, pelanggan tunjuk skrin pada staff di kaunter. Untuk produk digital, sistem bagi link terus bila mereka capai tahap referral.</p></details>
       <details><summary>Perlu kemahiran teknikal?</summary><p>Tidak. Awak isi borang ringkas dalam dashboard, set ganjaran, dan kongsi link. Kami uruskan bahagian teknikal.</p></details>
       <details><summary>Boleh batal langganan?</summary><p>Ya, bila-bila masa. Tiada kontrak terikat.</p></details>
@@ -468,7 +303,7 @@
       <div class="mstep-bar" id="bar2"></div>
     </div>
     <div id="step1">
-      <h3>Langkah 1 — Bayar & Isi Butiran</h3>
+      <h3>Langkah 1 — Bayar &amp; Isi Butiran</h3>
       <p class="msub">Imbas QR untuk bayar RM37, kemudian isi butiran awak.</p>
       <div class="qrbox">
         <img id="qrImg" src="" alt="QR Pembayaran" onerror="this.style.display='none'">
