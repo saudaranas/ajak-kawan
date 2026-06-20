@@ -77,6 +77,10 @@
   .price-sec h2 { font-size:clamp(26px,3.8vw,38px); margin:10px 0 6px; color:#fff; }
   .price-sec .psub { color:#b9b9c2; margin-bottom:28px; }
   .pcard { background:#fff; color:var(--ink); max-width:360px; margin:0 auto; border-radius:18px; padding:30px 24px; text-align:left; position:relative; }
+  .pgrid { display:grid; grid-template-columns:1fr 1fr; gap:18px; max-width:720px; margin:0 auto; }
+  .pgrid .pcard { max-width:none; margin:0; }
+  .pcard.featured { border:2px solid var(--brand); }
+  @media (max-width:640px){ .pgrid { grid-template-columns:1fr; } }
   .pflag { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--brand); color:#fff; font-size:11px; font-weight:800; padding:5px 14px; border-radius:20px; white-space:nowrap; }
   .pprice { display:flex; align-items:baseline; gap:6px; margin:8px 0 4px; }
   .pprice .rm { font-size:18px; font-weight:700; }
@@ -157,7 +161,7 @@
       <a href="#harga" class="btn btn-primary">Mula Hari Ini</a>
       <a href="https://ajakkawan.online/?id=K4KAH42FW" target="_blank" class="btn btn-ghost">Lihat Demo</a>
     </div>
-    <p class="hero-note"><b>Tawaran Early Bird:</b> RM37/bulan untuk 15 pendaftar pertama sahaja.</p>
+    <p class="hero-note"><b>Mula dari RM15/bulan.</b> Pakej tahunan RM100 — setup percuma, jimat RM80.</p>
     <div class="mockwrap">
       <div class="badge-float b1"><span class="pulse"></span> +1 lead baru</div>
       <div class="badge-float b2">🎁 Reward unlock!</div>
@@ -249,23 +253,41 @@
   <div id="harga" class="wrap section">
     <div class="price-sec">
       <div class="eyebrow">Harga</div>
-      <h2>Satu harga. Semua ciri.</h2>
+      <h2>Pilih pakej yang sesuai.</h2>
       <p class="psub">Tiada kos tersembunyi. Batal bila-bila.</p>
-      <div class="pcard">
-        <div class="pflag">🔥 Early Bird — 15 tempat sahaja</div>
-        <div class="eyebrow" style="color:var(--brand-deep);margin-top:8px">AjakKawan Pro</div>
-        <div class="pprice"><span class="rm">RM</span><span class="amt">37</span><span class="per">/ bulan</span></div>
-        <div class="pold">Selepas 15 pendaftar pertama: <s>RM50/bulan</s></div>
-        <ul class="plist">
-          <li>Kempen referral penuh</li>
-          <li>Reward tiers tanpa had</li>
-          <li>Dashboard statistik (klik, lead, referral)</li>
-          <li>Link optin &amp; share automatik</li>
-          <li>Tebus offline atau link</li>
-        </ul>
-        <button class="btn btn-primary" onclick="openModal()">Sertai Early Bird</button>
-        <p class="scarce">Harga ni akan naik selepas 15 tempat penuh.</p>
+      <div class="pgrid">
+
+        <!-- BULANAN -->
+        <div class="pcard">
+          <div class="eyebrow" style="color:var(--brand-deep)">Bulanan</div>
+          <div class="pprice"><span class="rm">RM</span><span class="amt">15</span><span class="per">/ bulan</span></div>
+          <div class="pold">Bayaran pertama RM25 (termasuk setup RM10 sekali sahaja)</div>
+          <ul class="plist">
+            <li>Kempen referral penuh</li>
+            <li>Reward tiers tanpa had</li>
+            <li>Dashboard statistik</li>
+            <li>Link optin &amp; share automatik</li>
+          </ul>
+          <button class="btn btn-primary" onclick="openModal('bulanan')">Pilih Bulanan</button>
+        </div>
+
+        <!-- TAHUNAN -->
+        <div class="pcard featured">
+          <div class="pflag">⭐ PALING POPULAR — Jimat RM80</div>
+          <div class="eyebrow" style="color:var(--brand-deep);margin-top:8px">Tahunan</div>
+          <div class="pprice"><span class="rm">RM</span><span class="amt">100</span><span class="per">/ tahun</span></div>
+          <div class="pold"><b style="color:var(--node)">Setup PERCUMA</b> &bull; <s>RM180/tahun</s> kalau bulanan</div>
+          <ul class="plist">
+            <li>Semua dalam pakej Bulanan</li>
+            <li>Setup percuma (jimat RM10)</li>
+            <li>Bayar sekali, jimat sepanjang tahun</li>
+            <li>≈ RM8.33/bulan sahaja</li>
+          </ul>
+          <button class="btn btn-primary" onclick="openModal('tahunan')">Pilih Tahunan</button>
+        </div>
+
       </div>
+      <p class="scarce" style="margin-top:20px">Pakej tahunan jimat RM80 berbanding bayar bulanan setahun.</p>
     </div>
   </div>
 
@@ -304,11 +326,11 @@
     </div>
     <div id="step1">
       <h3>Langkah 1 — Bayar &amp; Isi Butiran</h3>
-      <p class="msub">Imbas QR untuk bayar RM37, kemudian isi butiran awak.</p>
+      <p class="msub" id="m_paysub">Imbas QR untuk bayar, kemudian isi butiran awak.</p>
       <div class="qrbox">
         <img id="qrImg" src="" alt="QR Pembayaran" onerror="this.style.display='none'">
-        <div class="amt">RM37.00</div>
-        <div class="lbl">Early Bird — bulanan</div>
+        <div class="amt" id="m_amount">RM25.00</div>
+        <div class="lbl" id="m_paklbl">Bulanan — bayaran pertama</div>
       </div>
       <label>Nama / Bisnes</label>
       <input id="f_name" type="text" placeholder="Nama bisnes awak">
@@ -323,8 +345,8 @@
       <h3>Langkah 2 — Sahkan Pesanan</h3>
       <p class="msub">Semak butiran, kemudian hantar bukti bayar melalui WhatsApp.</p>
       <div style="margin:16px 0">
-        <div class="summary-row"><span>Pakej</span><b>AjakKawan Pro (Early Bird)</b></div>
-        <div class="summary-row"><span>Harga</span><b>RM37 / bulan</b></div>
+        <div class="summary-row"><span>Pakej</span><b id="s_pakej">—</b></div>
+        <div class="summary-row"><span>Bayaran</span><b id="s_bayar">—</b></div>
         <div class="summary-row"><span>Nama</span><b id="s_name">—</b></div>
         <div class="summary-row"><span>Email</span><b id="s_email">—</b></div>
         <div class="summary-row"><span>WhatsApp</span><b id="s_phone">—</b></div>
@@ -337,7 +359,7 @@
 
 <script>
 const ADMIN_WHATSAPP = "60123456789";
-const QR_IMAGE_URL = "";
+const QR_IMAGE_URL = "https://i.postimg.cc/D0NBdqWV/IMG-20260615-203217-091.jpg";
 const GAS_URL = "https://script.google.com/macros/s/AKfycbx1d5r79Rr8xLFdjW_BkcDOd27ZHO1f_emxeCCwioPc0UqD1MQ5O8fI6-F5V5D9VW9l/exec";
 
 const _p = new URLSearchParams(location.search);
@@ -424,7 +446,20 @@ function showRecover() {
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 if(QR_IMAGE_URL)document.getElementById("qrImg").src=QR_IMAGE_URL;
 
-function openModal(){document.getElementById("overlay").classList.add("on");document.body.style.overflow="hidden";}
+const PAKEJ = {
+  bulanan: { nama: "Bulanan", bayar: 25, bayarLabel: "RM25 (RM15 + setup RM10)", lbl: "Bulanan — bayaran pertama" },
+  tahunan: { nama: "Tahunan", bayar: 100, bayarLabel: "RM100/tahun (setup PERCUMA)", lbl: "Tahunan — setup percuma" }
+};
+let PILIH = "bulanan";
+
+function openModal(pakej){
+  PILIH = (pakej === "tahunan") ? "tahunan" : "bulanan";
+  const p = PAKEJ[PILIH];
+  document.getElementById("m_amount").textContent = "RM" + p.bayar + ".00";
+  document.getElementById("m_paklbl").textContent = p.lbl;
+  document.getElementById("overlay").classList.add("on");
+  document.body.style.overflow="hidden";
+}
 function closeModal(){document.getElementById("overlay").classList.remove("on");document.body.style.overflow="";backStep1();}
 
 function toStep2(){
@@ -436,6 +471,9 @@ function toStep2(){
   if(!name){err.textContent="Sila isi nama / bisnes.";return;}
   if(!email||email.indexOf("@")<0){err.textContent="Sila isi email yang sah.";return;}
   if(phone.length<9){err.textContent="Sila isi nombor WhatsApp yang sah.";return;}
+  const p = PAKEJ[PILIH];
+  document.getElementById("s_pakej").textContent = "AjakKawan Pro — " + p.nama;
+  document.getElementById("s_bayar").textContent = p.bayarLabel;
   document.getElementById("s_name").textContent=name;
   document.getElementById("s_email").textContent=email;
   document.getElementById("s_phone").textContent=phone;
@@ -454,7 +492,8 @@ function sendWhatsApp(){
   const name=document.getElementById("s_name").textContent;
   const email=document.getElementById("s_email").textContent;
   const phone=document.getElementById("s_phone").textContent;
-  const msg=encodeURIComponent("Hai! Saya nak sertai AjakKawan (Early Bird RM37/bulan).\n\nNama/Bisnes: "+name+"\nEmail: "+email+"\nWhatsApp: "+phone+"\n\nSaya dah buat pembayaran, ini buktinya:");
+  const p = PAKEJ[PILIH];
+  const msg=encodeURIComponent("Hai! Saya nak sertai AjakKawan.\n\nPakej: "+p.nama+" ("+p.bayarLabel+")\nNama/Bisnes: "+name+"\nEmail: "+email+"\nWhatsApp: "+phone+"\n\nSaya dah buat pembayaran, ini buktinya:");
   window.open("https://wa.me/"+ADMIN_WHATSAPP+"?text="+msg,"_blank");
 }
 </script>
