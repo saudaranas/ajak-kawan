@@ -39,6 +39,8 @@
   table { width:100%; border-collapse:collapse; font-size:13px; margin-top:8px; }
   th, td { text-align:left; padding:8px 6px; border-bottom:1px solid #f0f0f0; }
   th { color:var(--muted); font-weight:600; }
+  .toggle-row { display:flex; align-items:center; gap:10px; cursor:pointer; margin-top:12px; }
+  .toggle-row input { width:auto; margin:0; }
   .hidden { display:none; }
 </style>
 </head>
@@ -115,6 +117,19 @@
       <label>Subheadline</label>
       <input id="c_subline" type="text">
 
+      <h2 style="margin-top:20px">Kumpul Email & Brevo</h2>
+      <label class="toggle-row">
+        <input id="c_collectEmail" type="checkbox" onchange="toggleBrevo()">
+        <span>Kumpul email dari lead (wajib diisi bila ON)</span>
+      </label>
+      <div id="brevoFields" class="hidden">
+        <label>Brevo API Key</label>
+        <input id="c_brevoKey" type="text" placeholder="xkeysib-...">
+        <label>Brevo List ID (pilihan)</label>
+        <input id="c_brevoListId" type="text" placeholder="cth: 5" inputmode="numeric">
+        <p class="muted" style="font-size:12px;margin-top:6px">Email lead akan auto-masuk ke akaun Brevo anda. Dapatkan API key di Brevo → SMTP & API → API Keys. List ID boleh dilihat di menu Contacts → Lists.</p>
+      </div>
+
       <h2 style="margin-top:20px">Reward Tiers</h2>
       <div id="tiersWrap"></div>
       <button class="btn-sec btn-sm" onclick="addTier()" style="margin-top:6px">+ Tambah Tier</button>
@@ -155,7 +170,6 @@ function onLoggedIn(token, campaignId, name) {
   document.getElementById("auth").classList.add("hidden");
   document.getElementById("dash").classList.remove("hidden");
   document.getElementById("welcome").textContent = name ? ("Hai, " + name) : "";
-  // Link optin = root domain + ?id=campaign. Buang /login/ dari path.
   const base = location.origin + location.pathname
     .replace(/login\/$/, "").replace(/login\/index\.html$/, "")
     .replace(/app\.html$/, "").replace(/index\.html$/, "");
@@ -189,8 +203,17 @@ function loadCampaign() {
     document.getElementById("c_posterUrl").value = CONFIG.posterUrl || "";
     document.getElementById("c_headline").value = CONFIG.headline || "";
     document.getElementById("c_subline").value = CONFIG.subline || "";
+    document.getElementById("c_collectEmail").checked = !!CONFIG.collectEmail;
+    document.getElementById("c_brevoKey").value = CONFIG.brevoKey || "";
+    document.getElementById("c_brevoListId").value = CONFIG.brevoListId || "";
+    toggleBrevo();
     renderTiers();
   });
+}
+
+function toggleBrevo() {
+  const on = document.getElementById("c_collectEmail").checked;
+  document.getElementById("brevoFields").classList.toggle("hidden", !on);
 }
 
 function renderTiers() {
@@ -264,13 +287,16 @@ function saveCampaign() {
   CONFIG.posterUrl = document.getElementById("c_posterUrl").value;
   CONFIG.headline = document.getElementById("c_headline").value;
   CONFIG.subline = document.getElementById("c_subline").value;
+  CONFIG.collectEmail = document.getElementById("c_collectEmail").checked;
+  CONFIG.brevoKey = document.getElementById("c_brevoKey").value.trim();
+  CONFIG.brevoListId = document.getElementById("c_brevoListId").value.trim();
   CONFIG.tiers.sort((a,b)=>a.referrals-b.referrals);
 
   call({action:"savecampaign", token:TOKEN, campaign_id:CAMPAIGN_ID, config_json:JSON.stringify(CONFIG)})
     .then(d => {
       const m = document.getElementById("saveMsg");
-      if (d.ok) { m.textContent = "Tersimpan!"; renderTiers(); setTimeout(()=>m.textContent="",2000); }
-      else m.textContent = d.error || "Ralat simpan";
+      if (d.ok) { m.textContent = "Tersimpan!"; m.className="ok"; renderTiers(); setTimeout(()=>m.textContent="",2000); }
+      else { m.className="err"; m.textContent = d.error || "Ralat simpan"; }
     });
 }
 
@@ -287,8 +313,11 @@ function loadStats() {
 
     const lt = document.getElementById("leadTable");
     if (!d.leads || !d.leads.length) { lt.innerHTML = "<p class='muted'>Tiada lead lagi.</p>"; return; }
-    lt.innerHTML = "<table><tr><th>Nama</th><th>Phone</th><th>Ajak</th></tr>" +
-      d.leads.map(l => `<tr><td>${esc(l.name||'-')}</td><td>${esc(l.phone||'-')}</td><td>${l.count||0}</td></tr>`).join("") +
+    const hasEmail = d.leads.some(l => l.email);
+    lt.innerHTML = "<table><tr><th>Nama</th><th>Phone</th>" + (hasEmail?"<th>Email</th>":"") + "<th>Ajak</th></tr>" +
+      d.leads.map(l => `<tr><td>${esc(l.name||'-')}</td><td>${esc(l.phone||'-')}</td>` +
+        (hasEmail?`<td>${esc(l.email||'-')}</td>`:"") +
+        `<td>${l.count||0}</td></tr>`).join("") +
       "</table>";
   });
 }
@@ -299,7 +328,7 @@ function copyOptin() {
   event.target.textContent = "Disalin!"; setTimeout(()=>event.target.textContent="Salin",1500);
 }
 
-function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 </script>
 </body>
 </html>
