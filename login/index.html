@@ -69,6 +69,37 @@
     </div>
   </div>
 
+  <!-- LANGGANAN TAMAT -->
+  <div id="expired" class="hidden">
+    <div class="card" style="text-align:center">
+      <div style="font-size:38px;margin-bottom:6px">⏰</div>
+      <h1>Langganan Tamat</h1>
+      <p class="muted" style="margin-bottom:18px">Akaun anda masih selamat — data lead tak hilang. Perbaharui untuk teruskan guna AjakKawan.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px">
+        <div style="border:1.5px solid var(--line);border-radius:11px;padding:16px 10px">
+          <div style="font-size:13px;font-weight:700;color:var(--muted)">Bulanan</div>
+          <div style="font-size:28px;font-weight:900;color:var(--accent)">RM15</div>
+          <div style="font-size:12px;color:var(--muted)">/ bulan</div>
+        </div>
+        <div style="border:2px solid var(--accent);border-radius:11px;padding:16px 10px;position:relative">
+          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:12px;white-space:nowrap">JIMAT RM80</div>
+          <div style="font-size:13px;font-weight:700;color:var(--muted)">Tahunan</div>
+          <div style="font-size:28px;font-weight:900;color:var(--accent)">RM100</div>
+          <div style="font-size:12px;color:var(--muted)">/ tahun</div>
+        </div>
+      </div>
+
+      <div style="background:#fafafa;border-radius:12px;padding:18px;margin-bottom:16px">
+        <img id="renewQr" src="" alt="QR Pembayaran" style="width:170px;height:170px;object-fit:contain;border-radius:8px;background:#fff;padding:6px" onerror="this.style.display='none'">
+        <p class="muted" style="font-size:12px;margin-top:8px">Imbas QR untuk bayar, kemudian hantar bukti via WhatsApp.</p>
+      </div>
+
+      <a id="renewWa" href="#" target="_blank" style="display:block;background:#25d366;color:#fff;text-decoration:none;padding:14px;border-radius:10px;font-weight:700">📤 Hantar Bukti via WhatsApp</a>
+      <button class="btn-sec btn-sm" onclick="backToLogin()" style="margin-top:14px">Kembali ke Log Masuk</button>
+    </div>
+  </div>
+
   <!-- DASHBOARD -->
   <div id="dash" class="hidden">
     <div class="card">
@@ -159,6 +190,9 @@
 <script>
 // ====== TUKAR INI ======
 const GAS_URL = "https://script.google.com/macros/s/AKfycbx1d5r79Rr8xLFdjW_BkcDOd27ZHO1f_emxeCCwioPc0UqD1MQ5O8fI6-F5V5D9VW9l/exec";
+// QR pembayaran & WhatsApp anda (untuk renew langganan tamat)
+const RENEW_QR_URL = "https://i.postimg.cc/D0NBdqWV/IMG-20260615-203217-091.jpg";
+const RENEW_WHATSAPP = "60123456789";
 // =======================
 
 let TOKEN = "", CAMPAIGN_ID = "", CONFIG = null;
@@ -173,8 +207,25 @@ function doLogin() {
   const pass = document.getElementById("li_pass").value;
   call({action:"login", email:email, pass:pass}).then(d => {
     if (d.ok) { onLoggedIn(d.token, d.campaign_id, d.name); }
+    else if (/tamat/i.test(d.error || "")) { showExpired(email); }
     else authErr(d.error || "Ralat");
   }).catch(()=>authErr("Ralat sambungan"));
+}
+
+function showExpired(email) {
+  document.getElementById("auth").classList.add("hidden");
+  document.getElementById("expired").classList.remove("hidden");
+  const qr = document.getElementById("renewQr");
+  if (RENEW_QR_URL) qr.src = RENEW_QR_URL;
+  const msg = encodeURIComponent(
+    "Hai! Saya nak perbaharui langganan AjakKawan.\n\nEmail akaun: " + (email || "-") +
+    "\nPilihan: (Bulanan RM15 / Tahunan RM100)\n\nSaya dah buat pembayaran, ini buktinya:");
+  document.getElementById("renewWa").href = "https://wa.me/" + RENEW_WHATSAPP + "?text=" + msg;
+}
+
+function backToLogin() {
+  document.getElementById("expired").classList.add("hidden");
+  document.getElementById("auth").classList.remove("hidden");
 }
 
 function authErr(m) { document.getElementById("authErr").textContent = m; }
