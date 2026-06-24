@@ -30,6 +30,7 @@
   .pill.ok { background:#f0fbf4; color:var(--ok); }
   .pill.exp { background:#fde8ea; color:#e23744; }
   .linkmini { font-size:11px; color:var(--accent); word-break:break-all; }
+  .actions { display:flex; flex-wrap:wrap; gap:4px; }
   .hidden { display:none; }
   .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 </style>
@@ -71,6 +72,7 @@
       <select id="nc_plan">
         <option value="1bulan">1 Bulan</option>
         <option value="3bulan">3 Bulan</option>
+        <option value="1tahun">1 Tahun</option>
       </select>
       <button class="btn-primary" onclick="createClient()">Daftar Client</button>
       <p class="ok" id="createMsg"></p>
@@ -141,9 +143,12 @@ function renderClients(clients) {
           <span class="muted" style="font-size:11px">${expTxt}</span></td>
         <td><a class="linkmini" href="${esc(optin)}" target="_blank">${esc(optin)}</a></td>
         <td>
-          <button class="btn-sm btn-sec" onclick="renew('${c.client_id}','1bulan')">+1bln</button>
-          <button class="btn-sm btn-sec" onclick="renew('${c.client_id}','3bulan')">+3bln</button>
-          <button class="btn-sm btn-warn" onclick="delClient('${c.client_id}','${esc(c.email)}')">Padam</button>
+          <div class="actions">
+            <button class="btn-sm btn-sec" onclick="renew('${c.client_id}','1bulan')">+1bln</button>
+            <button class="btn-sm btn-sec" onclick="renew('${c.client_id}','3bulan')">+3bln</button>
+            <button class="btn-sm btn-sec" onclick="renew('${c.client_id}','1tahun')">+1thn</button>
+            <button class="btn-sm btn-warn" onclick="delClient('${c.client_id}','${esc(c.email)}')">Padam</button>
+          </div>
         </td>
       </tr>`;
     }).join("") + "</table>";
