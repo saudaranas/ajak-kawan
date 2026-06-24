@@ -41,6 +41,8 @@
   th { color:var(--muted); font-weight:600; }
   .toggle-row { display:flex; align-items:center; gap:10px; cursor:pointer; margin-top:12px; }
   .toggle-row input { width:auto; margin:0; }
+  .help { background:#f7f9ff; border:1px solid #e3e8f5; border-radius:9px; padding:12px; font-size:12.5px; color:#445; margin-top:10px; line-height:1.6; }
+  .help b { color:#1a1a1a; }
   .hidden { display:none; }
 </style>
 </head>
@@ -127,8 +129,21 @@
         <input id="c_brevoKey" type="text" placeholder="xkeysib-...">
         <label>Brevo List ID (pilihan)</label>
         <input id="c_brevoListId" type="text" placeholder="cth: 5" inputmode="numeric">
-        <p class="muted" style="font-size:12px;margin-top:6px">Email lead akan auto-masuk ke akaun Brevo anda. Dapatkan API key di Brevo → SMTP & API → API Keys. List ID boleh dilihat di menu Contacts → Lists.</p>
+        <p class="muted" style="font-size:12px;margin-top:6px">Email lead akan auto-masuk ke akaun Brevo anda. Dapatkan API key di Brevo → SMTP & API → API Keys. List ID di Contacts → Lists.</p>
       </div>
+
+      <h2 style="margin-top:20px">Notifikasi Telegram</h2>
+      <label>Telegram Chat ID</label>
+      <input id="c_telegramChatId" type="text" placeholder="cth: 123456789" inputmode="numeric">
+      <div class="help">
+        Dapat notifikasi terus ke Telegram bila ada lead baru, referral masuk, atau lead capai ganjaran.<br><br>
+        <b>Cara setup (sekali sahaja):</b><br>
+        1. Buka bot kami di Telegram &amp; tekan <b>Start</b>.<br>
+        2. Hantar <b>/start</b> ke <b>@userinfobot</b> — ia balas Chat ID anda (nombor).<br>
+        3. Paste nombor tu di atas, Simpan, kemudian tekan <b>Uji</b>.
+      </div>
+      <button class="btn-sec btn-sm" onclick="testTelegram()" style="margin-top:10px">Uji Telegram</button>
+      <span id="tgMsg" style="font-size:13px;margin-left:10px"></span>
 
       <h2 style="margin-top:20px">Reward Tiers</h2>
       <div id="tiersWrap"></div>
@@ -148,7 +163,6 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbx1d5r79Rr8xLFdjW_BkcDO
 
 let TOKEN = "", CAMPAIGN_ID = "", CONFIG = null;
 
-// ---------- AUTH ----------
 function call(params) {
   const q = Object.keys(params).map(k => k+"="+encodeURIComponent(params[k])).join("&");
   return fetch(GAS_URL + "?" + q).then(r => r.json());
@@ -184,7 +198,6 @@ function logout() {
   document.getElementById("auth").classList.remove("hidden");
 }
 
-// ---------- DASH NAV ----------
 function showDash(which) {
   document.getElementById("navStats").classList.toggle("on", which==="stats");
   document.getElementById("navEdit").classList.toggle("on", which==="edit");
@@ -195,7 +208,7 @@ function showDash(which) {
 
 // ---------- CAMPAIGN ----------
 function loadCampaign() {
-  call({action:"getcampaign", campaign_id:CAMPAIGN_ID}).then(d => {
+  call({action:"getcampaign", campaign_id:CAMPAIGN_ID, token:TOKEN}).then(d => {
     if (!d.ok) return;
     CONFIG = d.config;
     document.getElementById("c_campaignName").value = CONFIG.campaignName || "";
@@ -206,6 +219,7 @@ function loadCampaign() {
     document.getElementById("c_collectEmail").checked = !!CONFIG.collectEmail;
     document.getElementById("c_brevoKey").value = CONFIG.brevoKey || "";
     document.getElementById("c_brevoListId").value = CONFIG.brevoListId || "";
+    document.getElementById("c_telegramChatId").value = CONFIG.telegramChatId || "";
     toggleBrevo();
     renderTiers();
   });
@@ -214,6 +228,21 @@ function loadCampaign() {
 function toggleBrevo() {
   const on = document.getElementById("c_collectEmail").checked;
   document.getElementById("brevoFields").classList.toggle("hidden", !on);
+}
+
+function testTelegram() {
+  const msg = document.getElementById("tgMsg");
+  const chatId = document.getElementById("c_telegramChatId").value.trim();
+  if (!chatId) { msg.style.color="#e23744"; msg.textContent="Isi Chat ID dulu & Simpan."; return; }
+  msg.style.color="#666"; msg.textContent="Menghantar...";
+  // Pastikan Chat ID terkini dah disimpan dulu, baru uji.
+  collectAll();
+  call({action:"savecampaign", token:TOKEN, campaign_id:CAMPAIGN_ID, config_json:JSON.stringify(CONFIG)})
+    .then(()=> call({action:"testtelegram", token:TOKEN, campaign_id:CAMPAIGN_ID}))
+    .then(d => {
+      if (d.ok) { msg.style.color="#1faa59"; msg.textContent="✅ Berjaya! Semak Telegram anda."; }
+      else { msg.style.color="#e23744"; msg.textContent = d.error || "Gagal."; }
+    }).catch(()=>{ msg.style.color="#e23744"; msg.textContent="Ralat sambungan."; });
 }
 
 function renderTiers() {
@@ -280,7 +309,8 @@ function collectTiers() {
   CONFIG.tiers = arr;
 }
 
-function saveCampaign() {
+// Kumpul semua field (selain tiers) ke CONFIG.
+function collectAll() {
   collectTiers();
   CONFIG.campaignName = document.getElementById("c_campaignName").value;
   CONFIG.businessName = document.getElementById("c_businessName").value;
@@ -290,12 +320,16 @@ function saveCampaign() {
   CONFIG.collectEmail = document.getElementById("c_collectEmail").checked;
   CONFIG.brevoKey = document.getElementById("c_brevoKey").value.trim();
   CONFIG.brevoListId = document.getElementById("c_brevoListId").value.trim();
-  CONFIG.tiers.sort((a,b)=>a.referrals-b.referrals);
+  CONFIG.telegramChatId = document.getElementById("c_telegramChatId").value.trim();
+}
 
+function saveCampaign() {
+  collectAll();
+  CONFIG.tiers.sort((a,b)=>a.referrals-b.referrals);
   call({action:"savecampaign", token:TOKEN, campaign_id:CAMPAIGN_ID, config_json:JSON.stringify(CONFIG)})
     .then(d => {
       const m = document.getElementById("saveMsg");
-      if (d.ok) { m.textContent = "Tersimpan!"; m.className="ok"; renderTiers(); setTimeout(()=>m.textContent="",2000); }
+      if (d.ok) { m.className="ok"; m.textContent = "Tersimpan!"; renderTiers(); setTimeout(()=>m.textContent="",2000); }
       else { m.className="err"; m.textContent = d.error || "Ralat simpan"; }
     });
 }
