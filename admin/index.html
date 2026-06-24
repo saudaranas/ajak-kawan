@@ -136,6 +136,7 @@ function renderClients(clients) {
       const active = exp && exp > now;
       const expTxt = exp ? exp.toLocaleDateString('ms-MY') : "-";
       const optin = OPTIN_BASE + "?id=" + c.campaign_id;
+      const isDemo = String(c.email || "").toLowerCase() === "demo";
       return `<tr>
         <td><strong>${esc(c.name||'-')}</strong><br><span class="muted">${esc(c.email)}</span></td>
         <td>${esc(c.plan||'-')}<br>
@@ -147,7 +148,9 @@ function renderClients(clients) {
             <button class="btn-sm btn-sec" onclick="renew('${c.client_id}','1bulan')">+1bln</button>
             <button class="btn-sm btn-sec" onclick="renew('${c.client_id}','3bulan')">+3bln</button>
             <button class="btn-sm btn-sec" onclick="renew('${c.client_id}','1tahun')">+1thn</button>
-            <button class="btn-sm btn-warn" onclick="delClient('${c.client_id}','${esc(c.email)}')">Padam</button>
+            ${isDemo
+              ? `<span class="pill" style="background:#eef;color:#5b21b6">🔒 Demo</span>`
+              : `<button class="btn-sm btn-warn" onclick="delClient('${c.client_id}','${esc(c.email)}')">Padam</button>`}
           </div>
         </td>
       </tr>`;
