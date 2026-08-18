@@ -47,6 +47,8 @@
 // ====== TUKAR INI ======
 const GAS_URL = "https://script.google.com/macros/s/AKfycbx1d5r79Rr8xLFdjW_BkcDOd27ZHO1f_emxeCCwioPc0UqD1MQ5O8fI6-F5V5D9VW9l/exec";
 const POLL_INTERVAL_MS = 10000; // auto-check setiap 10 saat
+const DEFAULT_CAPTION = "Kongsi link awak. Setiap kawan yang join = satu langkah lebih dekat ke ganjaran.";
+const DEFAULT_BUTTON_TEXT = "🎁 Akses Reward";
 // =======================
 
 const params = new URLSearchParams(location.search);
@@ -106,10 +108,11 @@ function render(d, isFirstLoad) {
     : "Tahniah! Semua ganjaran dibuka 🎉";
   const waMsg = encodeURIComponent(
     `Saya jumpa offer best dari ${d.businessName || "kempen ni"}! Join guna link saya: ${refLink}`);
+  const caption = d.shareCaption ? esc(d.shareCaption) : DEFAULT_CAPTION;
 
   card.innerHTML = `
     <h1>Hai ${esc(d.name||"")}! 👋</h1>
-    <p class="hi"><span class="live-dot"></span>Kongsi link awak. Setiap kawan yang join = satu langkah lebih dekat ke ganjaran.</p>
+    <p class="hi"><span class="live-dot"></span>${caption}</p>
     <div class="count"><div class="big" id="bigCount">${count}</div><div class="lbl">kawan dah join</div></div>
     <div class="bar"><div style="width:${pct}%"></div></div>
     <p class="next">${nextTxt}</p>
@@ -123,10 +126,12 @@ function render(d, isFirstLoad) {
       const done = count >= t.referrals;
       let action = "";
       if (done) {
-        if (t.rewardType === "link" && t.rewardUrl)
-          action = `<a href="${esc(t.rewardUrl)}" target="_blank" style="display:inline-block;margin-top:8px;padding:9px 16px;background:var(--ok);color:#fff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">🎁 Akses Reward</a>`;
-        else if (t.instruction)
+        if (t.rewardType === "link" && t.rewardUrl) {
+          const btnLabel = t.buttonText ? esc(t.buttonText) : DEFAULT_BUTTON_TEXT;
+          action = `<a href="${esc(t.rewardUrl)}" target="_blank" style="display:inline-block;margin-top:8px;padding:9px 16px;background:var(--ok);color:#fff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">${btnLabel}</a>`;
+        } else if (t.instruction) {
           action = `<div style="margin-top:8px;font-size:13px;color:#1faa59;">📍 ${esc(t.instruction)}</div>`;
+        }
       }
       return `<div class="tier ${done?'done':''}"><span class="n">${t.referrals}</span>
         <div style="flex:1"><strong>${esc(t.name)}</strong><br>
