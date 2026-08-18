@@ -13,8 +13,9 @@
   .card { background:#fff; border-radius:16px; padding:26px 22px; box-shadow:0 4px 24px rgba(0,0,0,.06); }
   h1 { font-size:22px; margin-bottom:4px; }
   .hi { color:var(--muted); font-size:15px; margin-bottom:20px; }
-  .count { text-align:center; padding:18px; background:#fde8ea; border-radius:12px; margin-bottom:18px; }
-  .count .big { font-size:42px; font-weight:800; color:var(--accent); line-height:1; }
+  .count { text-align:center; padding:18px; background:#fde8ea; border-radius:12px; margin-bottom:18px; position:relative; }
+  .count .big { font-size:42px; font-weight:800; color:var(--accent); line-height:1; transition:transform .25s ease; }
+  .count .big.pulse { transform:scale(1.15); }
   .count .lbl { font-size:13px; color:var(--muted); margin-top:4px; }
   .bar { height:10px; background:#eee; border-radius:6px; overflow:hidden; margin:6px 0 4px; }
   .bar > div { height:100%; background:var(--accent); transition:width .5s; }
@@ -33,6 +34,8 @@
   .tier.done .n { background:var(--ok); color:#fff; }
   .tier .check { margin-left:auto; color:var(--ok); font-weight:700; }
   .sec { font-size:14px; color:var(--muted); margin:18px 0 10px; font-weight:600; }
+  .live-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--ok); margin-right:5px; vertical-align:middle; animation:blink 2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
 </style>
 </head>
 <body>
@@ -43,6 +46,7 @@
 <script>
 // ====== TUKAR INI ======
 const GAS_URL = "https://script.google.com/macros/s/AKfycbx1d5r79Rr8xLFdjW_BkcDOd27ZHO1f_emxeCCwioPc0UqD1MQ5O8fI6-F5V5D9VW9l/exec";
+const POLL_INTERVAL_MS = 10000; // auto-check setiap 10 saat
 // =======================
 
 const params = new URLSearchParams(location.search);
@@ -54,17 +58,45 @@ const card = document.getElementById("card");
 const basePath = location.pathname.replace(/share\/$/, "").replace(/share\/index\.html$/, "").replace(/index\.html$/, "");
 const refLink = location.origin + basePath + "?id=" + encodeURIComponent(campaignId) + "&ref=" + code;
 
+let lastCount = null;
+let pollTimer = null;
+
 if (!campaignId || !code) {
   card.innerHTML = "<h1>Kod tak dijumpai</h1><p class='hi'>Sila daftar semula.</p>";
 } else {
-  fetch(GAS_URL + "?action=status&campaign_id=" + encodeURIComponent(campaignId) + "&code=" + encodeURIComponent(code))
-    .then(r => r.json()).then(render)
-    .catch(() => { card.innerHTML = "<h1>Ralat sambungan</h1>"; });
+  fetchStatus(true);
+  startPolling();
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopPolling();
+    else { fetchStatus(false); startPolling(); }
+  });
 }
 
-function render(d) {
-  if (!d.ok) { card.innerHTML = "<h1>Kod tak sah</h1><p class='hi'>"+esc(d.error||"")+"</p>"; return; }
+function fetchStatus(isFirstLoad) {
+  fetch(GAS_URL + "?action=status&campaign_id=" + encodeURIComponent(campaignId) + "&code=" + encodeURIComponent(code))
+    .then(r => r.json())
+    .then(d => render(d, isFirstLoad))
+    .catch(() => { if (isFirstLoad) card.innerHTML = "<h1>Ralat sambungan</h1>"; });
+}
+
+function startPolling() {
+  if (pollTimer) return;
+  pollTimer = setInterval(() => fetchStatus(false), POLL_INTERVAL_MS);
+}
+function stopPolling() {
+  clearInterval(pollTimer);
+  pollTimer = null;
+}
+
+function render(d, isFirstLoad) {
+  if (!d.ok) {
+    if (isFirstLoad) card.innerHTML = "<h1>Kod tak sah</h1><p class='hi'>"+esc(d.error||"")+"</p>";
+    return;
+  }
   const count = d.count || 0;
+  const bumped = lastCount !== null && count > lastCount;
+  lastCount = count;
+
   const tiers = d.tiers || [];
   const nextTier = tiers.find(t => count < t.referrals);
   const maxRef = tiers.length ? tiers[tiers.length-1].referrals : 1;
@@ -77,8 +109,8 @@ function render(d) {
 
   card.innerHTML = `
     <h1>Hai ${esc(d.name||"")}! 👋</h1>
-    <p class="hi">Kongsi link awak. Setiap kawan yang join = satu langkah lebih dekat ke ganjaran.</p>
-    <div class="count"><div class="big">${count}</div><div class="lbl">kawan dah join</div></div>
+    <p class="hi"><span class="live-dot"></span>Kongsi link awak. Setiap kawan yang join = satu langkah lebih dekat ke ganjaran.</p>
+    <div class="count"><div class="big" id="bigCount">${count}</div><div class="lbl">kawan dah join</div></div>
     <div class="bar"><div style="width:${pct}%"></div></div>
     <p class="next">${nextTxt}</p>
     <a class="wa" href="https://wa.me/?text=${waMsg}">📤 Kongsi di WhatsApp</a>
@@ -102,6 +134,12 @@ function render(d) {
         ${done?'<span class="check">✓</span>':''}</div>`;
     }).join("")}
   `;
+
+  if (bumped) {
+    const el = document.getElementById("bigCount");
+    el.classList.add("pulse");
+    setTimeout(() => el.classList.remove("pulse"), 300);
+  }
 }
 
 function copyLink() {
